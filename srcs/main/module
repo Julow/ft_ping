@@ -1,1 +1,3 @@
 main module ft_ping:
+	require ft::base
+	require ft::printf

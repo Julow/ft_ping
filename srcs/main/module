@@ -1,3 +1,5 @@
 main module ft_ping:
+	require ft::argv
 	require ft::base
 	require ft::printf
+	require raw_socket

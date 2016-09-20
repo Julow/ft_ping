@@ -6,90 +6,78 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/19 17:53:27 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/20 19:41:07 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft/argv.h"
 #include "ft/ft_printf.h"
 #include "ft/libft.h"
 
-#include <errno.h>
-#include <netdb.h>
-#include <string.h>
-#include <unistd.h>
+#include "raw_socket.h"
 
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+#include <stddef.h>
 
-#define ADDR_DST_LENGTH		MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)
+typedef struct s_ping_args		t_ping_args;
 
-static int		try_connect(struct addrinfo const *info, char *addr_dst)
+/*
+** raw_sock_flags	=> raw_socket_create flags
+** count			=> number of packet to send (0 means no limit)
+** host				=> host
+*/
+struct			s_ping_args
 {
-	int				fd;
-	void const		*addr;
+	uint32_t		raw_sock_flags;
+	uint32_t		count;
+	char const		*host;
+};
 
-	while (info != NULL)
-	{
-		fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
-		if (fd >= 0)
-		{
-			addr = (info->ai_family == AF_INET)
-				? (void const*)&((struct sockaddr_in const*)info->ai_addr)->sin_addr
-				: (void const*)&((struct sockaddr_in6 const*)info->ai_addr)->sin6_addr;
-			if (inet_ntop(info->ai_family, addr, addr_dst, ADDR_DST_LENGTH) == NULL)
-				*addr_dst = '\0';
-			if (connect(fd, info->ai_addr, info->ai_addrlen) >= 0)
-				return (fd);
-			ft_dprintf(2, "connect: %s%n", strerror(errno));
-			close(fd);
+static struct s_argv_opt const	g_ping_opt[] = {
+	ARGV_OPT_FLAG("6", RAW_SOCKET_F_IPV6, offsetof(t_ping_args, raw_sock_flags)),
+	ARGV_OPT_VALUE("c", P_UINT, offsetof(t_ping_args, count)),
+	ARGV_OPT_ALIAS("count", "c"),
+};
 
-		}
-		info = info->ai_next;
-	}
-	ft_dprintf(2, "socket: Can't create socket%n");
-	return (-1);
-}
-
-int				connect_raw(bool ipv6, char const *addr, char *addr_dst)
+bool			parse_argv(t_argv argv, t_ping_args *dst)
 {
-	struct protoent		*proto;
-	struct addrinfo		hints;
-	struct addrinfo		*res;
-	int					tmp;
+	t_argv_opt_err	err;
+	t_sub			tmp;
 
-	if ((proto = getprotobyname("icmp")) == NULL)
+	ft_bzero(dst, sizeof(t_ping_args));
+	if ((err = ft_argv_argv(&argv, g_ping_opt,
+				ARRAY_LEN(g_ping_opt), dst)) != ARGV_OPT_OK)
 	{
-		ASSERT(!"getprotobyname fail");
-		return (-1);
+		ft_argv_arg(&argv, &tmp);
+		ft_dprintf(2, "ping: %ts: %ts%n", tmp, g_argv_opt_strerr[err]);
+		return (false);
 	}
-	hints = (struct addrinfo){
-		.ai_family = ipv6 ? AF_INET6 : AF_INET,
-		.ai_socktype = SOCK_RAW,
-		.ai_protocol = proto->p_proto,
-	};
-	if ((tmp = getaddrinfo(addr, NULL, &hints, &res)) != 0)
+	if (!ft_argv_arg(&argv, &tmp))
 	{
-		ft_dprintf(2, "getaddrinfo: %s%n", gai_strerror(tmp));
-		return (-1);
+		ft_dprintf(2, "ping: Missing host argument%n");
+		return (false);
 	}
-	tmp = try_connect(res, addr_dst);
-	freeaddrinfo(res);
-	return (tmp);
+	dst->host = tmp.str;
+	if (ft_argv_arg(&argv, &tmp))
+	{
+		ft_dprintf(2, "ping: %ts: Unexpected argument%n", tmp);
+	}
+	ft_printf("raw_sock_flags: %b ; count: %u ; host: '%s'%n",
+			dst->raw_sock_flags, dst->count, dst->host);
+	return (false);
 }
-
-#include <stdio.h>
 
 int				main(int argc, char **argv)
 {
-	char			addr_buff[ADDR_DST_LENGTH];
-	int				sock_fd;
+	char			addr_buff[RAW_SOCKET_ADDR_LEN];
+	t_raw_socket	*sock;
+	t_ping_args		ping_args;
 
-	if (argc <= 1)
+	if (!parse_argv(ARGV(argc, argv), &ping_args))
 		return (1);
-	if ((sock_fd = connect_raw(false, argv[1], addr_buff)) < 0)
+	if ((sock = raw_socket_create(argv[1], 0)) == NULL)
 		return (1);
+	raw_socket_addr(sock, addr_buff);
 	ft_printf("Connected to %s (%s)%n", argv[1], addr_buff);
-	close(sock_fd);
+	raw_socket_destroy(sock);
 	return (0);
 }

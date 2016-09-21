@@ -44,7 +44,8 @@ O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_printf/ft_aprintf.o $(O_DIR)/libft/ft_printf/ft_logf.o \
 	$(O_DIR)/libft/ft_printf/ft_out.o $(O_DIR)/libft/ft_printf/ft_printf.o \
 	$(O_DIR)/libft/ft_printf/ft_putf.o $(O_DIR)/libft/ft_printf/ft_vprintf.o \
-	$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/raw_socket/raw_socket.o
+	$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
+	$(O_DIR)/srcs/raw_socket/raw_socket.o
 PUBLIC_LINKS += $(O_DIR)/_public/ft/argv.h $(O_DIR)/_public/ft/ft_colors.h \
 	$(O_DIR)/_public/ft/ft_dstr.h $(O_DIR)/_public/ft/ft_out.h \
 	$(O_DIR)/_public/ft/ft_printf.h $(O_DIR)/_public/ft/ft_str_out.h \
@@ -292,7 +293,15 @@ $(O_DIR)/libft/ft_printf/ft_putf.o $(O_DIR)/libft/ft_printf/ft_vprintf.o: \
 $(O_DIR)/srcs/main/main.o: srcs/main/main.c libft/ft_argv/public/argv.h \
 	libft/ft_base/public/libft.h libft/ft_dstr/public/ft_dstr.h \
 	libft/ft_out/public/ft_out.h libft/ft_printf/public/ft_printf.h \
-	srcs/raw_socket/public/raw_socket.h
+	srcs/main/p_main.h srcs/raw_socket/public/raw_socket.h
+$(O_DIR)/srcs/main/parse_argv.o: srcs/main/parse_argv.c \
+	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
+	libft/ft_dstr/public/ft_dstr.h libft/ft_out/public/ft_out.h \
+	libft/ft_printf/public/ft_printf.h libft/ft_printf/public/ft_vprintf.h \
+	srcs/main/p_main.h srcs/raw_socket/public/raw_socket.h
+
+$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o: INCLUDE_FLAGS += \
+	-Isrcs/main
 
 # module raw_socket
 $(O_DIR)/srcs/raw_socket/raw_socket.o: srcs/raw_socket/raw_socket.c \

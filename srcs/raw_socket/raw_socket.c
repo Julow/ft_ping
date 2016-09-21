@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:23:55 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/20 14:50:24 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/21 14:22:17 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static t_raw_socket	*try_connect(struct addrinfo const *info, uint32_t flags)
+static t_raw_socket	*try_connect(struct addrinfo const *info)
 {
 	int				fd;
 	t_raw_socket	*sock;
@@ -37,40 +37,34 @@ static t_raw_socket	*try_connect(struct addrinfo const *info, uint32_t flags)
 			continue ;
 		}
 		sock = MALLOC(sizeof(t_raw_socket) + info->ai_addrlen);
-		*sock = (t_raw_socket){fd, flags, ENDOF(sock)};
+		*sock = (t_raw_socket){fd, 0, ENDOF(sock)};
+		if (info->ai_family == AF_INET6)
+			sock->flags |= RAW_SOCKET_F_IPV6;
 		ft_memcpy(ENDOF(sock), info->ai_addr, info->ai_addrlen);
 		return (sock);
 	}
-	ASSERT(!"socket fail");
-	// ft_dprintf(2, "socket: %s%n", strerror(err));
+	ft_dprintf(2, "socket: %s%n", strerror(err));
 	return (NULL);
 }
 
-t_raw_socket		*raw_socket_create(char const *host, uint32_t flags)
+t_raw_socket		*raw_socket_create(char const *host, int ai_family)
 {
-	struct protoent		*proto;
 	struct addrinfo		hints;
 	struct addrinfo		*res;
 	int					tmp;
 	t_raw_socket		*sock;
 
-	if ((proto = getprotobyname("icmp")) == NULL)
-	{
-		ASSERT(!"getprotobyname fail");
-		return (NULL);
-	}
 	hints = (struct addrinfo){
-		.ai_family = (flags & RAW_SOCKET_F_IPV6) ? AF_INET6 : AF_INET,
+		.ai_family = ai_family,
 		.ai_socktype = SOCK_RAW,
-		.ai_protocol = proto->p_proto, // ? IPPROTO_ICMP
+		.ai_protocol = IPPROTO_ICMP,
 	};
 	if ((tmp = getaddrinfo(host, NULL, &hints, &res)) != 0)
 	{
-		// ft_dprintf(2, "getaddrinfo: %s%n", gai_strerror(tmp));
-		ASSERT(!"getaddrinfo fail");
+		ft_dprintf(2, "getaddrinfo: %s%n", gai_strerror(tmp));
 		return (NULL);
 	}
-	sock = try_connect(res, flags);
+	sock = try_connect(res);
 	freeaddrinfo(res);
 	return (sock);
 }

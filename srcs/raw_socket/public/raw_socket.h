@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:15:40 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/20 14:50:18 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/21 12:45:11 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,10 @@ struct			s_raw_socket
 
 /*
 ** Create a raw socket to 'host'
+** ai_family can be AF_INET, AF_INET6 or AF_UNSPEC
 ** Return NULL on error
 */
-t_raw_socket	*raw_socket_create(char const *host, uint32_t flags);
+t_raw_socket	*raw_socket_create(char const *host, int ai_family);
 
 /*
 ** Write the address of 's' in human readable format into 'dst'

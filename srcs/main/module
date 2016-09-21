@@ -1,4 +1,6 @@
 main module ft_ping:
+	private include .
+
 	require ft::argv
 	require ft::base
 	require ft::printf

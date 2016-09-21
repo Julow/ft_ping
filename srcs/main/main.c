@@ -6,64 +6,72 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/20 19:41:07 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/21 19:14:45 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft/argv.h"
 #include "ft/ft_printf.h"
 #include "ft/libft.h"
 
+#include "p_main.h"
 #include "raw_socket.h"
 
-#include <stddef.h>
+typedef struct s_icmp_header		t_icmp_header;
 
-typedef struct s_ping_args		t_ping_args;
+struct			s_icmp_header
+{
+	uint8_t			type;
+	uint8_t			code;
+	uint16_t		checksum;
+	uint32_t		data;
+};
 
 /*
-** raw_sock_flags	=> raw_socket_create flags
-** count			=> number of packet to send (0 means no limit)
-** host				=> host
+** 1's complement internet checksum
+** 'length' is in byte
 */
-struct			s_ping_args
+static short	ip_checksum(void const *data, uint32_t length)
 {
-	uint32_t		raw_sock_flags;
-	uint32_t		count;
-	char const		*host;
-};
+	uint32_t		i;
+	uint32_t		sum;
+	uint32_t		tmp;
 
-static struct s_argv_opt const	g_ping_opt[] = {
-	ARGV_OPT_FLAG("6", RAW_SOCKET_F_IPV6, offsetof(t_ping_args, raw_sock_flags)),
-	ARGV_OPT_VALUE("c", P_UINT, offsetof(t_ping_args, count)),
-	ARGV_OPT_ALIAS("count", "c"),
-};
+	i = 0;
+	sum = 0;
+	while (i < (length & ~1))
+	{
+		sum += *(short const*)(data + i);
+		i += 2;
+	}
+	if (i < length)
+		sum += ((uint32_t)*(uint8_t const*)(data + i)) << 8;
+	while ((tmp = sum & 0xFFFF0000) != 0)
+		sum = (sum & 0xFFFF) + (tmp >> 16);
+	return (~sum);
+}
 
-bool			parse_argv(t_argv argv, t_ping_args *dst)
+/*
+** Send an ICMP packet
+** 'type', 'code' and 'header_data' are the corresponding fields in the icmp header
+*/
+static void		icmp_send(t_raw_socket *sock,
+					uint8_t type, uint8_t code,
+					uint32_t header_data,
+					t_sub payload)
 {
-	t_argv_opt_err	err;
-	t_sub			tmp;
+	char					msg[sizeof(t_icmp_header) + payload.length];
+	t_icmp_header *const	header = (t_icmp_header*)msg;
 
-	ft_bzero(dst, sizeof(t_ping_args));
-	if ((err = ft_argv_argv(&argv, g_ping_opt,
-				ARRAY_LEN(g_ping_opt), dst)) != ARGV_OPT_OK)
-	{
-		ft_argv_arg(&argv, &tmp);
-		ft_dprintf(2, "ping: %ts: %ts%n", tmp, g_argv_opt_strerr[err]);
-		return (false);
-	}
-	if (!ft_argv_arg(&argv, &tmp))
-	{
-		ft_dprintf(2, "ping: Missing host argument%n");
-		return (false);
-	}
-	dst->host = tmp.str;
-	if (ft_argv_arg(&argv, &tmp))
-	{
-		ft_dprintf(2, "ping: %ts: Unexpected argument%n", tmp);
-	}
-	ft_printf("raw_sock_flags: %b ; count: %u ; host: '%s'%n",
-			dst->raw_sock_flags, dst->count, dst->host);
-	return (false);
+	*(t_icmp_header*)msg = (t_icmp_header){type, code, 0, header_data};
+	ft_memcpy(msg + sizeof(t_icmp_header), payload.str, payload.length);
+	((t_icmp_header*)msg)->checksum = ip_checksum(msg, sizeof(msg));
+
+}
+
+// static uint32_t	icmp_recv(t_raw_socket *sock, )
+
+static void		test(t_raw_socket *sock)
+{
 }
 
 int				main(int argc, char **argv)
@@ -72,12 +80,17 @@ int				main(int argc, char **argv)
 	t_raw_socket	*sock;
 	t_ping_args		ping_args;
 
-	if (!parse_argv(ARGV(argc, argv), &ping_args))
+	if (!parse_argv(argc, argv, &ping_args))
 		return (1);
-	if ((sock = raw_socket_create(argv[1], 0)) == NULL)
+	ft_printf("ai_family: %d ; count: %u ; host: '%s'%n",
+			ping_args.ai_family, ping_args.count, ping_args.host);
+	if ((sock = raw_socket_create(ping_args.host, ping_args.ai_family)) == NULL)
 		return (1);
 	raw_socket_addr(sock, addr_buff);
-	ft_printf("Connected to %s (%s)%n", argv[1], addr_buff);
+	ft_printf("Connected to %s (%s)%n", ping_args.host, addr_buff);
+
+	test(sock);
+
 	raw_socket_destroy(sock);
 	return (0);
 }

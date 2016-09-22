@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:23:55 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/21 14:22:17 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/22 10:56:13 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static t_raw_socket	*try_connect(struct addrinfo const *info)
 			continue ;
 		}
 		sock = MALLOC(sizeof(t_raw_socket) + info->ai_addrlen);
-		*sock = (t_raw_socket){fd, 0, ENDOF(sock)};
+		*sock = (t_raw_socket){fd, 0, ENDOF(sock), info->ai_addrlen};
 		if (info->ai_family == AF_INET6)
 			sock->flags |= RAW_SOCKET_F_IPV6;
 		ft_memcpy(ENDOF(sock), info->ai_addr, info->ai_addrlen);

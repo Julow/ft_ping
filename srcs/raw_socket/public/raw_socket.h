@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:15:40 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/21 12:45:11 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/22 10:55:49 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,18 @@ typedef struct s_raw_socket			t_raw_socket;
 ** Raw socket
 */
 
+/*
+** fd			=> file descriptor
+** flags		=>
+** 			RAW_SOCKET_F_IPV6		The destination address use ipv6 format
+** addr			=> Destination address
+*/
 struct			s_raw_socket
 {
 	uint32_t		fd;
 	uint32_t		flags;
 	struct sockaddr	*addr;
+	uint32_t		addr_len;
 };
 
 /*

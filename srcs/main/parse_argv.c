@@ -6,16 +6,16 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/21 14:21:08 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/22 17:50:44 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft/argv.h"
 #include "ft/ft_printf.h"
 #include "ft/ft_vprintf.h"
+#include "net/raw_socket.h"
 
 #include "p_main.h"
-#include "raw_socket.h"
 
 #include <stddef.h>
 #include <stdlib.h>

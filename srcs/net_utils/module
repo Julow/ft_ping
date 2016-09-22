@@ -1,4 +1,4 @@
-module raw_socket:
+module net::utils:
 	public include public/
 
 	public require ft::base

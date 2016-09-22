@@ -1,0 +1,8 @@
+module net::icmp:
+	public include public/
+	private include ./
+
+	public require ft::base
+	public require net::raw_socket
+
+	private require net::utils

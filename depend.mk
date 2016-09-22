@@ -1,10 +1,11 @@
 INCLUDE_FLAGS += -I$(O_DIR)/_public
 MAINS += ft_ping
-OBJ_DIR_TREE += $(O_DIR)/srcs/raw_socket/ $(O_DIR)/srcs/main/ $(O_DIR)/srcs/ \
+OBJ_DIR_TREE += $(O_DIR)/srcs/net_utils/ $(O_DIR)/srcs/net_raw_socket/ \
+	$(O_DIR)/srcs/net_icmp/ $(O_DIR)/srcs/main/ $(O_DIR)/srcs/ \
 	$(O_DIR)/libft/ft_printf/formats/ $(O_DIR)/libft/ft_printf/ \
 	$(O_DIR)/libft/ft_out/ $(O_DIR)/libft/ft_dstr/ $(O_DIR)/libft/ft_base/ \
-	$(O_DIR)/libft/ft_argv/ $(O_DIR)/libft/ $(O_DIR)/_public/ft/ \
-	$(O_DIR)/_public/ $(O_DIR)/
+	$(O_DIR)/libft/ft_argv/ $(O_DIR)/libft/ $(O_DIR)/_public/net/ \
+	$(O_DIR)/_public/ft/ $(O_DIR)/_public/ $(O_DIR)/
 O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_argv/argv_argv_opt.o $(O_DIR)/libft/ft_argv/opt.o \
 	$(O_DIR)/libft/ft_base/ft_abs.o $(O_DIR)/libft/ft_base/ft_assert.o \
@@ -45,12 +46,14 @@ O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_printf/ft_out.o $(O_DIR)/libft/ft_printf/ft_printf.o \
 	$(O_DIR)/libft/ft_printf/ft_putf.o $(O_DIR)/libft/ft_printf/ft_vprintf.o \
 	$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
-	$(O_DIR)/srcs/raw_socket/raw_socket.o
+	$(O_DIR)/srcs/net_icmp/icmp.o $(O_DIR)/srcs/net_raw_socket/raw_socket.o \
+	$(O_DIR)/srcs/net_utils/net_checksum.o
 PUBLIC_LINKS += $(O_DIR)/_public/ft/argv.h $(O_DIR)/_public/ft/ft_colors.h \
 	$(O_DIR)/_public/ft/ft_dstr.h $(O_DIR)/_public/ft/ft_out.h \
 	$(O_DIR)/_public/ft/ft_printf.h $(O_DIR)/_public/ft/ft_str_out.h \
 	$(O_DIR)/_public/ft/ft_vprintf.h $(O_DIR)/_public/ft/ft_wchar.h \
-	$(O_DIR)/_public/ft/libft.h $(O_DIR)/_public/raw_socket.h
+	$(O_DIR)/_public/ft/libft.h $(O_DIR)/_public/net/icmp.h \
+	$(O_DIR)/_public/net/raw_socket.h $(O_DIR)/_public/net/utils.h
 
 ft_ping: $(O_FILES)
 
@@ -293,19 +296,32 @@ $(O_DIR)/libft/ft_printf/ft_putf.o $(O_DIR)/libft/ft_printf/ft_vprintf.o: \
 $(O_DIR)/srcs/main/main.o: srcs/main/main.c libft/ft_argv/public/argv.h \
 	libft/ft_base/public/libft.h libft/ft_dstr/public/ft_dstr.h \
 	libft/ft_out/public/ft_out.h libft/ft_printf/public/ft_printf.h \
-	srcs/main/p_main.h srcs/raw_socket/public/raw_socket.h
+	srcs/main/p_main.h srcs/net_icmp/public/icmp.h \
+	srcs/net_raw_socket/public/raw_socket.h
 $(O_DIR)/srcs/main/parse_argv.o: srcs/main/parse_argv.c \
 	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
 	libft/ft_dstr/public/ft_dstr.h libft/ft_out/public/ft_out.h \
 	libft/ft_printf/public/ft_printf.h libft/ft_printf/public/ft_vprintf.h \
-	srcs/main/p_main.h srcs/raw_socket/public/raw_socket.h
+	srcs/main/p_main.h srcs/net_raw_socket/public/raw_socket.h
 
 $(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o: INCLUDE_FLAGS += \
 	-Isrcs/main
 
-# module raw_socket
-$(O_DIR)/srcs/raw_socket/raw_socket.o: srcs/raw_socket/raw_socket.c \
-	libft/ft_base/public/libft.h srcs/raw_socket/public/raw_socket.h
+# module net::icmp
+$(O_DIR)/srcs/net_icmp/icmp.o: srcs/net_icmp/icmp.c \
+	libft/ft_base/public/libft.h srcs/net_icmp/p_icmp.h \
+	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h \
+	srcs/net_utils/public/utils.h
+
+$(O_DIR)/srcs/net_icmp/icmp.o: INCLUDE_FLAGS += -Isrcs/net_icmp
+
+# module net::raw_socket
+$(O_DIR)/srcs/net_raw_socket/raw_socket.o: srcs/net_raw_socket/raw_socket.c \
+	libft/ft_base/public/libft.h srcs/net_raw_socket/public/raw_socket.h
+
+# module net::utils
+$(O_DIR)/srcs/net_utils/net_checksum.o: srcs/net_utils/net_checksum.c \
+	libft/ft_base/public/libft.h srcs/net_utils/public/utils.h
 
 # public links
 $(O_DIR)/_public/ft/argv.h: libft/ft_argv/public/argv.h
@@ -317,4 +333,6 @@ $(O_DIR)/_public/ft/ft_str_out.h: libft/ft_out/public/ft_str_out.h
 $(O_DIR)/_public/ft/ft_vprintf.h: libft/ft_printf/public/ft_vprintf.h
 $(O_DIR)/_public/ft/ft_wchar.h: libft/ft_base/public/ft_wchar.h
 $(O_DIR)/_public/ft/libft.h: libft/ft_base/public/libft.h
-$(O_DIR)/_public/raw_socket.h: srcs/raw_socket/public/raw_socket.h
+$(O_DIR)/_public/net/icmp.h: srcs/net_icmp/public/icmp.h
+$(O_DIR)/_public/net/raw_socket.h: srcs/net_raw_socket/public/raw_socket.h
+$(O_DIR)/_public/net/utils.h: srcs/net_utils/public/utils.h

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 17:50:38 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/22 19:09:13 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ static void		print_icmp_packet(t_icmp_header const *header, t_sub payload)
 bool			icmp_echo_send(t_raw_socket *sock, uint16_t id, uint16_t seq,
 					t_sub payload)
 {
-	return (icmp_send(sock, 8, 0, (id << 16) | seq, payload));
+	t_icmp_header	header;
+
+	header = (t_icmp_header){8, 0, 0, (id << 16) | seq};
+	return (icmp_send(sock, &header, payload));
 }
 
 /*
@@ -77,14 +80,14 @@ static void		test(t_raw_socket *sock)
 {
 	uint32_t		len;
 	char			buff[512];
-	t_ip_header		ip_header;
+	t_ip_info		ip_info;
 	t_icmp_header	icmp_header;
 
 	icmp_echo_send(sock, 0, 0, SUBC("OKOKOKOKOK"));
 
 	while (true)
 	{
-		len = icmp_recv(sock, &ip_header, &icmp_header, buff, sizeof(buff));
+		len = icmp_recv(sock, &ip_info, &icmp_header, buff, sizeof(buff));
 		ft_printf("RECV %u bytes\n", len);
 		print_icmp_packet(&icmp_header, SUB(buff, len));
 	}

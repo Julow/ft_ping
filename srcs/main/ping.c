@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/24 17:04:41 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 18:40:09 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 19:20:52 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,30 @@ void			ping_recvloop(t_ping *ping)
 	}
 }
 
+static void	fill_payload(t_ping const *ping, char *dst)
+{
+	uint32_t	i;
+	uint32_t	tmp;
+
+	i = 0;
+	while (i < ping->payload_size)
+	{
+		tmp = MIN(ping->payload_size - i, ping->payload_pattern.length);
+		ft_memcpy(dst + i, ping->payload_pattern.str, tmp);
+		i += tmp;
+	}
+}
+
 bool		ping_send(t_ping *ping)
 {
+	char		payload[ping->payload_size];
+
 	if (ping->to_send == 0)
 		return (true);
-	if (!icmp_echo_send(ping->sock, ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
-				ping->payload))
+	fill_payload(ping, payload);
+	if (!icmp_echo_send(ping->sock,
+			ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
+			SUB(payload, sizeof(payload))))
 		return (false);
 	ping->to_send--;
 	ping->to_receive++;

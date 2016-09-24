@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 18:45:52 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 19:18:44 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void		print_status(t_ping const *ping)
 
 	raw_socket_addr(ping->sock, addr_buff);
 	ft_printf("PING %s (%s): %u data bytes%n",
-			ping->host_name, addr_buff, ping->payload.length);
+			ping->host_name, addr_buff, ping->payload_size);
 }
 
 static bool		send_preload(t_ping *ping, uint32_t p)
@@ -41,7 +41,6 @@ static bool		send_preload(t_ping *ping, uint32_t p)
 
 static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 {
-	t_sub const		payload = SUBC("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv");
 	t_ping			ping;
 
 	ping = (t_ping){
@@ -52,7 +51,8 @@ static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 		.echo_id = getpid(),
 		.echo_seq = 0,
 		.to_send = (args->count == 0) ? (uint32_t)-1 : args->count,
-		.payload = payload,
+		.payload_pattern = args->payload_pattern,
+		.payload_size = args->payload_size,
 	};
 	if (args->ttl > 0 && setsockopt(sock->fd, IPPROTO_IP, IP_TTL,
 				&args->ttl, sizeof(uint32_t)) < 0)

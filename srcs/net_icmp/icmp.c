@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:40:51 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 19:30:14 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 14:20:14 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ bool			icmp_send(t_raw_socket *sock, t_icmp_header const *header,
 	char					msg[sizeof(t_icmp_header) + payload.length];
 	t_icmp_header *const	dst_header = (t_icmp_header*)msg;
 
-	ASSERT(!"icmp send do not support ipv6 yet");
+	ASSERT(!(sock->flags & RAW_SOCKET_F_IPV6), "icmp send do not support ipv6 yet");
 
 	*dst_header = *header;
 	dst_header->checksum = 0;
@@ -57,6 +57,7 @@ static void		unpack_ip_info(t_ip_header const *header, t_ip_info *dst)
 			.max_hop = header->v6.hop_limit,
 			.protocol = header->v6.next_header,
 			.size = header->v6.payload_length + sizeof(t_ipv6_header),
+			.src_addr.v6 = header->v6.src_addr,
 		};
 	}
 	else
@@ -66,6 +67,7 @@ static void		unpack_ip_info(t_ip_header const *header, t_ip_info *dst)
 			.max_hop = header->v4.ttl,
 			.protocol = header->v4.protocol,
 			.size = header->v4.length,
+			.src_addr.v4 = header->v4.src_addr,
 		};
 	}
 }

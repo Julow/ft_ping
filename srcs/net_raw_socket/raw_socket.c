@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:23:55 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 17:51:08 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 10:42:38 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static t_raw_socket	*try_connect(struct addrinfo const *info)
 	while (true)
 	{
 		fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
-		if (err != 0)
+		if (err == 0)
 			err = errno;
 		if (fd < 0)
 		{

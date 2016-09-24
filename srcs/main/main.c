@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 19:09:13 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 17:08:53 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,97 +20,47 @@
 
 /*
 ** ========================================================================== **
-** ICMP Proto
 */
 
-static void		print_icmp_packet(t_icmp_header const *header, t_sub payload)
-{
-	uint32_t		i;
-	uint32_t		tmp;
+#include <unistd.h>
 
-	ft_printf("| %2u | %2u | %^6u |\n",
-			header->type, header->code, header->checksum);
-	ft_printf("| %^6u | %^6u |\n",
-			(header->data & 0xFFFF0000) >> 16, header->data & 0xFFFF);
-	i = 0;
-	while (i < payload.length)
-	{
-		ft_printf("| ");
-		tmp = i + 4;
-		while (i < MIN(tmp, payload.length))
-		{
-			if (IS(payload.str[i], IS_PRINT))
-				ft_printf(" \\%c ", (uint8_t)payload.str[i]);
-			else
-				ft_printf(" %.2x ", (uint8_t)payload.str[i]);
-			i++;
-		}
-		while (i < tmp)
-		{
-			ft_printf("    ");
-			i++;
-		}
-		ft_printf("  |%n");
-	}
+static void		print_status(t_ping const *ping)
+{
+	char			addr_buff[RAW_SOCKET_ADDR_LEN];
+
+	raw_socket_addr(ping->sock, addr_buff);
+	ft_printf("PING %s (%s): %u data bytes%n",
+			ping->host_name, addr_buff, ping->payload.length);
 }
 
-/*
-** ========================================================================== **
-** ICMP Echo Proto
-*/
-
-/*
-** Wrapper for icmp_send that send echo request
-** 'id' and 'seq' are "Identifier" and "Sequence number" header fields
-*/
-bool			icmp_echo_send(t_raw_socket *sock, uint16_t id, uint16_t seq,
-					t_sub payload)
+static void		ping(t_raw_socket *sock, t_ping_args const *args)
 {
-	t_icmp_header	header;
+	t_sub const		payload = SUBC("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv");
+	t_ping			ping;
 
-	header = (t_icmp_header){8, 0, 0, (id << 16) | seq};
-	return (icmp_send(sock, &header, payload));
-}
-
-/*
-** ========================================================================== **
-*/
-
-static void		test(t_raw_socket *sock)
-{
-	uint32_t		len;
-	char			buff[512];
-	t_ip_info		ip_info;
-	t_icmp_header	icmp_header;
-
-	icmp_echo_send(sock, 0, 0, SUBC("OKOKOKOKOK"));
-
-	while (true)
-	{
-		len = icmp_recv(sock, &ip_info, &icmp_header, buff, sizeof(buff));
-		ft_printf("RECV %u bytes\n", len);
-		print_icmp_packet(&icmp_header, SUB(buff, len));
-	}
-
+	ping = (t_ping){
+		.sock = sock,
+		.host_name = args->host,
+		.echo_id = getpid(),
+		.echo_seq = 0,
+		.to_send = (args->count == 0) ? (uint32_t)-1 : args->count,
+		.payload = payload,
+	};
+	print_status(&ping);
+	ping_send(&ping);
+	ping_recvloop(&ping);
 }
 
 int				main(int argc, char **argv)
 {
-	char			addr_buff[RAW_SOCKET_ADDR_LEN];
 	t_raw_socket	*sock;
 	t_ping_args		ping_args;
 
 	if (!parse_argv(argc, argv, &ping_args))
 		return (1);
-	ft_printf("ai_family: %d ; count: %u ; host: '%s'%n",
-			ping_args.ai_family, ping_args.count, ping_args.host);
 	if ((sock = raw_socket_create(ping_args.host, ping_args.ai_family)) == NULL)
 		return (1);
-	raw_socket_addr(sock, addr_buff);
-	ft_printf("Connected to %s (%s)%n", ping_args.host, addr_buff);
-
-	test(sock);
-
+	ping(sock, &ping_args);
 	raw_socket_destroy(sock);
 	return (0);
 }

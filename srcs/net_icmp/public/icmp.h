@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:39:13 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 19:29:38 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 14:19:09 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ struct			s_ip_info
 	uint8_t			max_hop;
 	uint8_t			protocol;
 	uint16_t		size;
+	union {
+		struct in_addr	v4;
+		struct in6_addr	v6;
+	}				src_addr;
 };
 
 /*

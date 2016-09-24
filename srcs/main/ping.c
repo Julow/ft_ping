@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/24 17:04:41 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 17:06:18 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 17:10:27 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ void			ping_recvloop(t_ping *ping)
 			return ;
 		if (echo_data.id != ping->echo_id)
 			continue ;
-
+		if (ping->flags & PING_F_PRINT)
+			ft_hexdump(buff, len, HEXDUMP_DEFAULT);
 		print_reply(len + sizeof(t_icmp_header), &ip_info, &echo_data);
 		ping->to_receive--;
 	}

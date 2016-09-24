@@ -45,10 +45,10 @@ O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_printf/ft_aprintf.o $(O_DIR)/libft/ft_printf/ft_logf.o \
 	$(O_DIR)/libft/ft_printf/ft_out.o $(O_DIR)/libft/ft_printf/ft_printf.o \
 	$(O_DIR)/libft/ft_printf/ft_putf.o $(O_DIR)/libft/ft_printf/ft_vprintf.o \
-	$(O_DIR)/srcs/main/icmp_echo.o $(O_DIR)/srcs/main/main.o \
-	$(O_DIR)/srcs/main/parse_argv.o $(O_DIR)/srcs/main/ping.o \
-	$(O_DIR)/srcs/main/set_timeout.o $(O_DIR)/srcs/net_icmp/icmp.o \
-	$(O_DIR)/srcs/net_raw_socket/raw_socket.o \
+	$(O_DIR)/srcs/main/hexdump.o $(O_DIR)/srcs/main/icmp_echo.o \
+	$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
+	$(O_DIR)/srcs/main/ping.o $(O_DIR)/srcs/main/set_timeout.o \
+	$(O_DIR)/srcs/net_icmp/icmp.o $(O_DIR)/srcs/net_raw_socket/raw_socket.o \
 	$(O_DIR)/srcs/net_utils/net_checksum.o
 PUBLIC_LINKS += $(O_DIR)/_public/ft/argv.h $(O_DIR)/_public/ft/ft_colors.h \
 	$(O_DIR)/_public/ft/ft_dstr.h $(O_DIR)/_public/ft/ft_out.h \
@@ -295,6 +295,9 @@ $(O_DIR)/libft/ft_printf/ft_putf.o $(O_DIR)/libft/ft_printf/ft_vprintf.o: \
 	INCLUDE_FLAGS += -Ilibft/ft_printf
 
 # module ft_ping
+$(O_DIR)/srcs/main/hexdump.o: srcs/main/hexdump.c libft/ft_argv/public/argv.h \
+	libft/ft_base/public/libft.h srcs/main/p_main.h \
+	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h
 $(O_DIR)/srcs/main/icmp_echo.o: srcs/main/icmp_echo.c \
 	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
 	srcs/main/p_main.h srcs/net_icmp/public/icmp.h \
@@ -318,9 +321,10 @@ $(O_DIR)/srcs/main/set_timeout.o: srcs/main/set_timeout.c \
 	srcs/main/p_main.h srcs/net_icmp/public/icmp.h \
 	srcs/net_raw_socket/public/raw_socket.h
 
-$(O_DIR)/srcs/main/icmp_echo.o $(O_DIR)/srcs/main/main.o \
-$(O_DIR)/srcs/main/parse_argv.o $(O_DIR)/srcs/main/ping.o \
-$(O_DIR)/srcs/main/set_timeout.o: INCLUDE_FLAGS += -Isrcs/main
+$(O_DIR)/srcs/main/hexdump.o $(O_DIR)/srcs/main/icmp_echo.o \
+$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
+$(O_DIR)/srcs/main/ping.o $(O_DIR)/srcs/main/set_timeout.o: INCLUDE_FLAGS += \
+	-Isrcs/main
 
 # module net::icmp
 $(O_DIR)/srcs/net_icmp/icmp.o: srcs/net_icmp/icmp.c \

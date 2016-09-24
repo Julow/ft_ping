@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 17:08:42 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 17:11:48 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,15 @@ struct			s_ping
 {
 	t_raw_socket	*sock;
 	char const		*host_name;
+	uint32_t		flags;
 	uint16_t		echo_id;
 	uint16_t		echo_seq;
 	uint32_t		to_receive;
 	uint32_t		to_send;
 	t_sub			payload;
 };
+
+# define PING_F_PRINT		(1 << 0)
 
 void			ping_recvloop(t_ping *ping);
 
@@ -85,13 +88,14 @@ void			ping_send(t_ping *ping);
 
 /*
 ** raw_sock_flags	=> raw_socket_create flags
+** flags			=> ping flags
 ** count			=> number of packet to send (0 means no limit)
 ** host				=> host
 */
 struct			s_ping_args
 {
 	int				ai_family;
-	uint32_t		ping_flags;
+	uint32_t		flags;
 	uint32_t		count;
 	char const		*host;
 };
@@ -106,6 +110,14 @@ bool			parse_argv(int ac, char **av, t_ping_args *dst);
 ** ========================================================================== **
 ** Utils
 */
+
+#define HEXDUMP_DEFAULT		VEC2U(2, 8)
+
+/*
+** Show 'size' bytes of 'data'
+** 'layout.x' is the number of byte group and 'layout.y' is the size of a group
+*/
+void			ft_hexdump(void const *data, uint32_t size, t_vec2u layout);
 
 /*
 ** Call function 'f' in 't' seconds

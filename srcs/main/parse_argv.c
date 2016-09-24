@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 17:50:44 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 17:13:44 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 		"    -c <count>\n"
 		"    --count=<count>\n"
 		"                Stop after <count> packets\n"
+		"    -p\n"
+		"    --print     Print packet content (in hexdump format)\n"
 		"    -?\n"
 		"    --help      Show help\n"
 		"%!", argv->argv[0]);
@@ -42,6 +44,7 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_SET("6", AF_INET6, offsetof(t_ping_args, ai_family)),
 	ARGV_OPT_SET("u", AF_UNSPEC, offsetof(t_ping_args, ai_family)),
 	ARGV_OPT_VALUE("c", P_UINT, offsetof(t_ping_args, count)),
+	ARGV_OPT_FLAG("p", PING_F_PRINT, offsetof(t_ping_args, flags)),
 	ARGV_OPT_FUNC("?", &opt_help, 0),
 	ARGV_OPT_ALIAS("count", "c"),
 	ARGV_OPT_ALIAS("help", "?"),
@@ -66,7 +69,7 @@ bool			parse_argv(int ac, char **av, t_ping_args *dst)
 	t_sub			tmp;
 
 	argv = ARGV(ac, av);
-	*dst = (t_ping_args){AF_UNSPEC, 0, NULL};
+	*dst = (t_ping_args){AF_UNSPEC, 0, 0, NULL};
 	if ((err = ft_argv_argv(&argv, g_ping_opt,
 				ARRAY_LEN(g_ping_opt), dst)) != ARGV_OPT_OK)
 	{

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 17:08:53 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 17:11:38 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static void		ping(t_raw_socket *sock, t_ping_args const *args)
 	ping = (t_ping){
 		.sock = sock,
 		.host_name = args->host,
+		.flags = args->flags,
 		.echo_id = getpid(),
 		.echo_seq = 0,
 		.to_send = (args->count == 0) ? (uint32_t)-1 : args->count,

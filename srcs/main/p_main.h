@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 17:11:48 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 18:42:25 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,19 +67,21 @@ struct			s_ping
 {
 	t_raw_socket	*sock;
 	char const		*host_name;
-	uint32_t		flags;
-	uint16_t		echo_id;
+	uint32_t const	flags;
+	uint32_t const	wait_time;
+	uint16_t const	echo_id;
 	uint16_t		echo_seq;
 	uint32_t		to_receive;
 	uint32_t		to_send;
-	t_sub			payload;
+	t_sub const		payload;
 };
 
 # define PING_F_PRINT		(1 << 0)
+# define PING_F_QUIET		(1 << 1)
 
 void			ping_recvloop(t_ping *ping);
 
-void			ping_send(t_ping *ping);
+bool			ping_send(t_ping *ping);
 
 /*
 ** ========================================================================== **
@@ -87,7 +89,9 @@ void			ping_send(t_ping *ping);
 */
 
 /*
-** raw_sock_flags	=> raw_socket_create flags
+** ai_family		=> (socket) adress family
+** ttl				=> time to live
+** preload			=> number of packet to send before the normal ping loop
 ** flags			=> ping flags
 ** count			=> number of packet to send (0 means no limit)
 ** host				=> host
@@ -95,8 +99,11 @@ void			ping_send(t_ping *ping);
 struct			s_ping_args
 {
 	int				ai_family;
+	uint32_t		ttl;
+	uint32_t		preload;
 	uint32_t		flags;
 	uint32_t		count;
+	uint32_t		wait;
 	char const		*host;
 };
 

@@ -6,11 +6,12 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/24 17:03:19 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 17:10:14 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/24 18:35:05 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "p_main.h"
+#include <ft/ft_printf.h>
 
 static void		hexdump_hex(uint8_t const *data, uint32_t size)
 {

@@ -52,7 +52,8 @@ O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/srcs/ft_utils/hexdump.o $(O_DIR)/srcs/ft_utils/set_timeout.o \
 	$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
 	$(O_DIR)/srcs/main/ping_recv_loop.o $(O_DIR)/srcs/main/ping_send.o \
-	$(O_DIR)/srcs/net_icmp/icmp.o $(O_DIR)/srcs/net_icmp/icmp_echo.o \
+	$(O_DIR)/srcs/main/ping_stats.o $(O_DIR)/srcs/net_icmp/icmp.o \
+	$(O_DIR)/srcs/net_icmp/icmp_echo.o \
 	$(O_DIR)/srcs/net_raw_socket/raw_socket.o \
 	$(O_DIR)/srcs/net_utils/net_checksum.o
 PUBLIC_LINKS += $(O_DIR)/_public/ft/argv.h $(O_DIR)/_public/ft/ft_colors.h \
@@ -365,10 +366,15 @@ $(O_DIR)/srcs/main/ping_send.o: srcs/main/ping_send.c \
 	srcs/ft_utils/public/utils.h srcs/main/p_main.h \
 	srcs/net_icmp/public/icmp.h srcs/net_icmp/public/icmp_echo.h \
 	srcs/net_raw_socket/public/raw_socket.h
+$(O_DIR)/srcs/main/ping_stats.o: srcs/main/ping_stats.c \
+	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
+	libft/ft_oset/public/oset.h libft/ft_set/public/set.h \
+	srcs/ft_utils/public/utils.h srcs/main/p_main.h \
+	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h
 
 $(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
-$(O_DIR)/srcs/main/ping_recv_loop.o $(O_DIR)/srcs/main/ping_send.o: \
-	INCLUDE_FLAGS += -Isrcs/main
+$(O_DIR)/srcs/main/ping_recv_loop.o $(O_DIR)/srcs/main/ping_send.o \
+$(O_DIR)/srcs/main/ping_stats.o: INCLUDE_FLAGS += -Isrcs/main
 
 # module net::icmp
 $(O_DIR)/srcs/net_icmp/icmp.o: srcs/net_icmp/icmp.c \

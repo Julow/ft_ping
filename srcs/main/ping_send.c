@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 18:08:14 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:09:03 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ bool			ping_send(t_ping *ping)
 	ping_push_packet(ping);
 	ping->echo_seq++;
 	ping->sent++;
+	ping->total_sent++;
 	if (ping->sent >= ping->count)
 	{
 		if (ping->payload_inc != 0)

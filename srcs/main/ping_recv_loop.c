@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 18:07:39 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 18:57:11 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,12 @@ static void		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
 		return ;
 	if ((delta_t = ping_pop_packet(ping, echo_data->seq)) == 0)
 		return ;
+	ping->total_received++;
+	ping->total_time += delta_t;
+	if (ping->max_time < delta_t)
+		ping->max_time = delta_t;
+	if (ping->min_time == 0 || ping->min_time > delta_t)
+		ping->min_time = delta_t;
 	if (!(ping->flags & PING_F_QUIET))
 	{
 		print_reply(payload.length + sizeof(t_icmp_header), ip_info,

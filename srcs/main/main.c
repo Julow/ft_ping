@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 17:57:38 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:11:12 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "p_main.h"
 
 #include <errno.h>
+#include <signal.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -53,10 +54,20 @@ static int		ping_packet_cmp(t_ping_packet const *a, uint32_t const *key)
 		return ((a->seq_number > *key) ? 1 : 0);
 }
 
+static t_ping *g_ping = NULL; // TODO: remove
+
+static void		handle_sigint(int sig)
+{
+	ping_show_stats(g_ping);
+	exit(0);
+	(void)sig;
+}
+
 static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 {
 	t_ping			ping;
 
+	g_ping = &ping;
 	ping = (t_ping){
 		.sock = sock,
 		.sent_packets = OSET(&ping_packet_cmp, 0),
@@ -73,7 +84,11 @@ static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 		.payload_size = args->payload_size,
 		.payload_inc = args->inc_size,
 		.payload_max = args->max_size,
+		.total_sent = 0,
+		.total_received = 0,
+		.total_time = 0,
 	};
+	signal(SIGINT, &handle_sigint);
 	if (args->ttl > 0 && setsockopt(sock->fd, IPPROTO_IP, IP_TTL,
 				&args->ttl, sizeof(uint32_t)) < 0)
 	{

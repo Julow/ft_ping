@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 19:18:26 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 14:21:27 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,13 @@ struct			s_ping
 	uint32_t const	wait_time;
 	uint16_t const	echo_id;
 	uint16_t		echo_seq;
+	uint32_t const	count;
+	uint32_t		sent;
 	uint32_t		to_receive;
-	uint32_t		to_send;
 	t_sub const		payload_pattern;
-	uint32_t const	payload_size;
+	uint32_t		payload_size;
+	int32_t const	payload_inc;
+	uint32_t const	payload_max;
 };
 
 # define PING_F_PRINT		(1 << 0)
@@ -105,6 +108,8 @@ struct			s_ping_args
 	uint32_t		flags;
 	uint32_t		count;
 	uint32_t		wait;
+	int32_t			inc_size;
+	uint32_t		max_size;
 	t_sub			payload_pattern;
 	uint32_t		payload_size;
 	char const		*host;

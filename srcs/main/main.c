@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 19:18:44 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 14:13:26 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,13 @@ static void		print_status(t_ping const *ping)
 	char			addr_buff[RAW_SOCKET_ADDR_LEN];
 
 	raw_socket_addr(ping->sock, addr_buff);
-	ft_printf("PING %s (%s): %u data bytes%n",
-			ping->host_name, addr_buff, ping->payload_size);
+	ft_printf("PING %s (%s): ", ping->host_name, addr_buff);
+	if (ping->payload_inc == 0)
+		ft_printf("%u", ping->payload_size);
+	else
+		ft_printf("(%u ... %u)", ping->payload_size,
+			(ping->payload_inc > 0) ? ping->payload_max : 0);
+	ft_printf(" data bytes%n");
 }
 
 static bool		send_preload(t_ping *ping, uint32_t p)
@@ -50,9 +55,13 @@ static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 		.flags = args->flags,
 		.echo_id = getpid(),
 		.echo_seq = 0,
-		.to_send = (args->count == 0) ? (uint32_t)-1 : args->count,
+		.count = args->count,
+		.sent = 0,
+		.to_receive = 1,
 		.payload_pattern = args->payload_pattern,
 		.payload_size = args->payload_size,
+		.payload_inc = args->inc_size,
+		.payload_max = args->max_size,
 	};
 	if (args->ttl > 0 && setsockopt(sock->fd, IPPROTO_IP, IP_TTL,
 				&args->ttl, sizeof(uint32_t)) < 0)

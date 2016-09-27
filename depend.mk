@@ -7,7 +7,7 @@ OBJ_DIR_TREE += $(O_DIR)/srcs/net_utils/ $(O_DIR)/srcs/net_raw_socket/ \
 	$(O_DIR)/libft/ft_argv/ $(O_DIR)/libft/ $(O_DIR)/_public/net/ \
 	$(O_DIR)/_public/ft/ $(O_DIR)/_public/ $(O_DIR)/
 O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
-	$(O_DIR)/libft/ft_argv/argv_argv_opt.o $(O_DIR)/libft/ft_argv/opt.o \
+	$(O_DIR)/libft/ft_argv/argv_argv_t.o $(O_DIR)/libft/ft_argv/opt.o \
 	$(O_DIR)/libft/ft_base/ft_abs.o $(O_DIR)/libft/ft_base/ft_assert.o \
 	$(O_DIR)/libft/ft_base/ft_atoib.o $(O_DIR)/libft/ft_base/ft_bitset.o \
 	$(O_DIR)/libft/ft_base/ft_bzero.o $(O_DIR)/libft/ft_base/ft_clock.o \
@@ -65,14 +65,14 @@ $(O_DIR)/libft/ft_argv/arg.o: libft/ft_argv/arg.c libft/ft_argv/public/argv.h \
 $(O_DIR)/libft/ft_argv/argv_argv.o: libft/ft_argv/argv_argv.c \
 	libft/ft_argv/p_argv.h libft/ft_argv/public/argv.h \
 	libft/ft_base/public/libft.h
-$(O_DIR)/libft/ft_argv/argv_argv_opt.o: libft/ft_argv/argv_argv_opt.c \
+$(O_DIR)/libft/ft_argv/argv_argv_t.o: libft/ft_argv/argv_argv_t.c \
 	libft/ft_argv/p_argv.h libft/ft_argv/public/argv.h \
 	libft/ft_base/public/libft.h
 $(O_DIR)/libft/ft_argv/opt.o: libft/ft_argv/opt.c libft/ft_argv/public/argv.h \
 	libft/ft_base/public/libft.h
 
 $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
-$(O_DIR)/libft/ft_argv/argv_argv_opt.o $(O_DIR)/libft/ft_argv/opt.o: \
+$(O_DIR)/libft/ft_argv/argv_argv_t.o $(O_DIR)/libft/ft_argv/opt.o: \
 	INCLUDE_FLAGS += -Ilibft/ft_argv
 
 # module ft::base

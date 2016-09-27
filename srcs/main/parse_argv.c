@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 19:17:38 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 13:29:17 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,40 +17,43 @@
 
 #include "p_main.h"
 
+#include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
 
 static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 {
 	ft_printf("Usage: %s [options] host\n"
-		"Options:\n"
-		"    -4          Ipv4 only\n"
-		"    -6          Ipv6 only\n"
-		"    -u          Ipv4 or Ipv6 (default)\n"
-		"    -c <count>\n"
-		"    --count=<count>\n"
-		"                Stop after <count> packets (default: unlimited)\n"
-		"    -i <wait>\n"
-		"    --wait=<wait>\n"
-		"                Wait <wait> second between each packets (default: 1)\n"
-		"    -P <data>\n"
-		"    --payload=<data>\n"
-		"                Set the payload pattern\n"
-		"                    (repeated until it match the size of a packet)\n"
-		"    -s <size>\n"
-		"    -size=<size>\n"
-		"                Set the size of a packet (default: 48)\n"
-		"    -l <preload>\n"
-		"    --preload=<preload>\n"
-		"                Send <preload> packet at the begining (default: 1)\n"
-		"    -m <ttl>\n"
-		"    --ttl=<ttl> Set the Time-To-Live value\n"
-		"    -p\n"
-		"    --print     Print packet content in hexdump format\n"
-		"    -q\n"
-		"    --quiet     Do not print message when receiving a packet\n"
-		"    -?\n"
-		"    --help      Show help\n"
+"Options:\n"
+"  -4                    Ipv4 only\n"
+"  -6                    Ipv6 only\n"
+"  -u                    Ipv4 or Ipv6 (default)\n"
+"  -c <count>\n"
+"  --count=<count>       Stop after <count> packets (default: unlimited)\n"
+"  -i <wait>\n"
+"  --wait=<wait>         Wait <wait> second between each packets (default: 1)\n"
+"  -P <data>\n"
+"  --payload=<data>      Set the payload pattern\n"
+"                          (repeated until it match the size of a packet)\n"
+"  -s <size>\n"
+"  --size=<size>         Set the size of a packet (default: 48)\n"
+"  -h <inc>\n"
+"  --increment=<inc>     Increment the packet size by <inc> after each packet\n"
+"                          or after <count> packets if the -c option is used\n"
+"  -G <max_size>\n"
+"  --max-increment=<max_size>\n"
+"                        Stop at <max_size> bytes when using the -h option\n"
+"                          (default: 96, max: 65507)\n"
+"  -l <preload>\n"
+"  --preload=<preload>   Send <preload> packet at the begining (default: 1)\n"
+"  -m <ttl>\n"
+"  --ttl=<ttl>           Set the Time-To-Live value\n"
+"  -p\n"
+"  --print               Print packet content in hexdump format\n"
+"  -q\n"
+"  --quiet               Do not print message when receiving a packet\n"
+"  -?\n"
+"  --help                Show help\n"
 		"%!", argv->argv[0]);
 	exit(0);
 	(void)dst;
@@ -60,14 +63,16 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_SET("4", AF_INET, offsetof(t_ping_args, ai_family)),
 	ARGV_OPT_SET("6", AF_INET6, offsetof(t_ping_args, ai_family)),
 	ARGV_OPT_SET("u", AF_UNSPEC, offsetof(t_ping_args, ai_family)),
-	ARGV_OPT_VALUE("P", SUB, offsetof(t_ping_args, payload_pattern)),
-	ARGV_OPT_VALUE("s", P_UINT, offsetof(t_ping_args, payload_size)),
-	ARGV_OPT_VALUE("c", P_UINT, offsetof(t_ping_args, count)),
+	ARGV_OPT_STR("P", false, offsetof(t_ping_args, payload_pattern)),
+	ARGV_OPT_UINT("s", (0, UINT_MAX), offsetof(t_ping_args, payload_size)),
+	ARGV_OPT_INT("h", (INT_MIN, INT_MAX), offsetof(t_ping_args, inc_size)),
+	ARGV_OPT_UINT("G", (0, 65507), offsetof(t_ping_args, max_size)),
+	ARGV_OPT_UINT("c", (1, UINT_MAX), offsetof(t_ping_args, count)),
 	ARGV_OPT_FLAG("p", PING_F_PRINT, offsetof(t_ping_args, flags)),
 	ARGV_OPT_FLAG("q", PING_F_QUIET, offsetof(t_ping_args, flags)),
-	ARGV_OPT_VALUE("l", P_UINT, offsetof(t_ping_args, preload)),
-	ARGV_OPT_VALUE("i", P_UINT, offsetof(t_ping_args, wait)),
-	ARGV_OPT_VALUE("m", P_UINT, offsetof(t_ping_args, ttl)),
+	ARGV_OPT_UINT("l", (1, UINT_MAX), offsetof(t_ping_args, preload)),
+	ARGV_OPT_UINT("i", (1, UINT_MAX), offsetof(t_ping_args, wait)),
+	ARGV_OPT_UINT("m", (1, UINT_MAX), offsetof(t_ping_args, ttl)),
 	ARGV_OPT_FUNC("?", &opt_help, 0),
 	ARGV_OPT_ALIAS("count", "c"),
 	ARGV_OPT_ALIAS("quiet", "q"),
@@ -75,6 +80,8 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_ALIAS("preload", "l"),
 	ARGV_OPT_ALIAS("payload", "P"),
 	ARGV_OPT_ALIAS("size", "s"),
+	ARGV_OPT_ALIAS("increment", "h"),
+	ARGV_OPT_ALIAS("max-increment", "G"),
 	ARGV_OPT_ALIAS("wait", "i"),
 	ARGV_OPT_ALIAS("ttl", "m"),
 	ARGV_OPT_ALIAS("help", "?"),
@@ -108,6 +115,8 @@ bool			parse_argv(int ac, char **av, t_ping_args *dst)
 		.flags = 0,
 		.count = 0,
 		.wait = 1,
+		.inc_size = 0,
+		.max_size = 96,
 		.payload_pattern = SUBC(PING_DEFAULT_PAYLOAD),
 		.payload_size = 48,
 		.host = NULL,

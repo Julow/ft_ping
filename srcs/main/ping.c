@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/24 17:04:41 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 19:20:52 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 14:19:31 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,9 @@ void			ping_recvloop(t_ping *ping)
 	t_ip_info			ip_info;
 	t_icmp_echo_data	echo_data;
 
-	while (ping->to_send > 0 || ping->to_receive > 0)
+	while (ping->to_receive > 0)
 	{
 		len = icmp_echo_recv(ping->sock, &ip_info, &echo_data, buff, sizeof(buff));
-		if (len == 0)
-			return ;
 		if (echo_data.id != ping->echo_id)
 			continue ;
 		if (!(ping->flags & PING_F_QUIET))
@@ -66,16 +64,25 @@ bool		ping_send(t_ping *ping)
 {
 	char		payload[ping->payload_size];
 
-	if (ping->to_send == 0)
-		return (true);
 	fill_payload(ping, payload);
 	if (!icmp_echo_send(ping->sock,
 			ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
 			SUB(payload, sizeof(payload))))
 		return (false);
-	ping->to_send--;
-	ping->to_receive++;
 	ping->echo_seq++;
+	ping->sent++;
+	if (ping->sent >= ping->count)
+	{
+		if (ping->payload_inc != 0)
+		{
+			if ((ping->payload_size += ping->payload_inc) >= ping->payload_max)
+				return (true);
+			ping->sent = 0;
+		}
+		else if (ping->count != 0)
+			return (true);
+	}
+	ping->to_receive++;
 	set_timeout(V(&ping_send), ping, ping->wait_time);
 	return (true);
 }

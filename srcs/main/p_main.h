@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 16:01:14 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 17:28:32 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,8 @@ struct			s_ping_packet
 # define PING_F_PRINT		(1 << 0)
 # define PING_F_QUIET		(1 << 1)
 
+# define PING_DANGEROUS_DELTA_T	(T_MSEC)
+
 void			ping_recvloop(t_ping *ping);
 
 bool			ping_send(t_ping *ping);
@@ -104,14 +106,6 @@ bool			ping_send(t_ping *ping);
 ** Parse argv
 */
 
-/*
-** ai_family		=> (socket) adress family
-** ttl				=> time to live
-** preload			=> number of packet to send before the normal ping loop
-** flags			=> ping flags
-** count			=> number of packet to send (0 means no limit)
-** host				=> host
-*/
 struct			s_ping_args
 {
 	int				ai_family;

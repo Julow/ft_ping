@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 16:05:58 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 16:47:34 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 "  -m <ttl>\n"
 "  --ttl=<ttl>           Set the Time-To-Live value\n"
 "  -t <timeout>\n"
-"  --timeout=<timeout>   Number of second to consider a packet lost\n"
+"  --timeout=<timeout>   Timeout in second to wait for a packet (default: 5)\n"
 "  -p\n"
 "  --print               Print packet content in hexdump format\n"
 "  -q\n"

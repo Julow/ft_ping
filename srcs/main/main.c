@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:11:12 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:32:35 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,20 +54,11 @@ static int		ping_packet_cmp(t_ping_packet const *a, uint32_t const *key)
 		return ((a->seq_number > *key) ? 1 : 0);
 }
 
-static t_ping *g_ping = NULL; // TODO: remove
-
-static void		handle_sigint(int sig)
-{
-	ping_show_stats(g_ping);
-	exit(0);
-	(void)sig;
-}
-
-static bool		ping(t_raw_socket *sock, t_ping_args const *args)
+__attribute__ ((noreturn))
+static void		ping(t_raw_socket *sock, t_ping_args const *args)
 {
 	t_ping			ping;
 
-	g_ping = &ping;
 	ping = (t_ping){
 		.sock = sock,
 		.sent_packets = OSET(&ping_packet_cmp, 0),
@@ -79,7 +70,6 @@ static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 		.echo_seq = 0,
 		.count = args->count,
 		.sent = 0,
-		.to_receive = 1,
 		.payload_pattern = args->payload_pattern,
 		.payload_size = args->payload_size,
 		.payload_inc = args->inc_size,
@@ -88,31 +78,27 @@ static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 		.total_received = 0,
 		.total_time = 0,
 	};
-	signal(SIGINT, &handle_sigint);
+	ping_handle_signals(&ping);
 	if (args->ttl > 0 && setsockopt(sock->fd, IPPROTO_IP, IP_TTL,
 				&args->ttl, sizeof(uint32_t)) < 0)
 	{
 		ft_dprintf(2, "setsockopt: %s%n", strerror(errno));
-		return (false);
+		exit(1);
 	}
 	print_status(&ping);
-	if (!send_preload(&ping, args->preload))
-		return (false);
+	send_preload(&ping, args->preload);
 	ping_recvloop(&ping);
-	return (true);
+	HARD_ASSERT(!"Should not have exit");
 }
 
 int				main(int argc, char **argv)
 {
 	t_raw_socket	*sock;
 	t_ping_args		ping_args;
-	bool			r;
 
 	if (!parse_argv(argc, argv, &ping_args))
 		return (2);
 	if ((sock = raw_socket_create(ping_args.host, ping_args.ai_family)) == NULL)
 		return (1);
-	r = ping(sock, &ping_args);
-	raw_socket_destroy(sock);
-	return (r ? 0 : 1);
+	ping(sock, &ping_args);
 }

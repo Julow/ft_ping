@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:09:03 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:33:48 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,12 @@ static void		ping_pop_timeout(t_ping *ping)
 	}
 }
 
+static void		ping_exit(t_ping *ping)
+{
+	ping_show_stats(ping);
+	exit(0);
+}
+
 bool			ping_send(t_ping *ping)
 {
 	char		payload[ping->payload_size];
@@ -67,7 +73,7 @@ bool			ping_send(t_ping *ping)
 	if (!icmp_echo_send(ping->sock,
 			ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
 			SUB(payload, sizeof(payload))))
-		return (false);
+		exit(1);
 	ping_push_packet(ping);
 	ping->echo_seq++;
 	ping->sent++;
@@ -77,13 +83,12 @@ bool			ping_send(t_ping *ping)
 		if (ping->payload_inc != 0)
 		{
 			if ((ping->payload_size += ping->payload_inc) >= ping->payload_max)
-				return (true);
+				ping_exit(ping);
 			ping->sent = 0;
 		}
 		else if (ping->count != 0)
-			return (true);
+			ping_exit(ping);
 	}
-	ping->to_receive++;
-	set_timeout(V(&ping_send), ping, ping->wait_time);
+	alarm(ping->wait_time);
 	return (true);
 }

@@ -1,31 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   set_timeout.c                                      :+:      :+:    :+:   */
+/*   signal_handlers.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/24 17:05:08 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 18:00:26 by jaguillo         ###   ########.fr       */
+/*   Created: 2016/09/27 19:26:43 by jaguillo          #+#    #+#             */
+/*   Updated: 2016/09/27 19:29:12 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft/utils.h"
-
+#include "p_main.h"
 #include <signal.h>
-#include <unistd.h>
 
-static t_callback	g_set_timeout_callback = CALLBACK(NULL, NULL);
+static t_ping	*g_ping_singleton = NULL;
 
-static void		set_timeout_handler(int sig)
+static void		handle_sigint(int sig)
 {
-	CALL(void, g_set_timeout_callback);
+	ping_show_stats(g_ping_singleton);
+	exit(0);
 	(void)sig;
 }
 
-void			set_timeout(void (*f)(), void *data, uint32_t t)
+static void		handle_sigalrm(int sig)
 {
-	g_set_timeout_callback = CALLBACK(f, data);
-	signal(SIGALRM, &set_timeout_handler);
-	alarm(t);
+	ping_send(g_ping_singleton);
+	(void)sig;
+}
+
+void			ping_handle_signals(t_ping *ping)
+{
+	g_ping_singleton = ping;
+	signal(SIGINT, &handle_sigint);
+	signal(SIGALRM, &handle_sigalrm);
 }

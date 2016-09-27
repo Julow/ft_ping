@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 18:57:11 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:32:20 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ static void		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
 		if (ping->flags & PING_F_PRINT)
 			ft_hexdump(payload.str, payload.length, HEXDUMP_DEFAULT);
 	}
-	ping->to_receive--;
 }
 
 void			ping_recvloop(t_ping *ping)
@@ -83,7 +82,7 @@ void			ping_recvloop(t_ping *ping)
 	t_icmp_header		icmp_header;
 	t_icmp_echo_data	echo_data;
 
-	while (ping->to_receive > 0)
+	while (true)
 	{
 		len = icmp_recv(ping->sock, &ip_info, &icmp_header, buff, sizeof(buff));
 		if (len == 0)

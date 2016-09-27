@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:58:37 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:10:12 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:31:27 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void			ping_show_stats(t_ping const *ping)
 			100 - ((ping->total_received == 0) ? 0 :
 							ping->total_sent * 100 / ping->total_received));
 	if (ping->total_received > 0)
-		ft_printf("round-trip min/avg/max = %f/%f/%f ms%n",
+		ft_printf("round-trip min/avg/max = %0.3f/%0.3f/%0.3f ms%n",
 				USEC_TO_F(ping->min_time, T_MSEC),
 				USEC_TO_F(ping->total_time / ping->total_received, T_MSEC),
 				USEC_TO_F(ping->max_time, T_MSEC));

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 17:59:22 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 17:59:47 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 19:29:34 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,5 @@
 ** 'layout.x' is the number of byte group and 'layout.y' is the size of a group
 */
 void			ft_hexdump(void const *data, uint32_t size, t_vec2u layout);
-
-/*
-** ========================================================================== **
-** Set timeout
-*/
-
-/*
-** Call function 'f' in 't' seconds
-** The function 'f' take 'data' as param
-*/
-void			set_timeout(void (*f)(), void *data, uint32_t t);
-
 
 #endif

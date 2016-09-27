@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 17:28:32 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 18:02:03 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,46 +15,9 @@
 
 # include "ft/argv.h"
 # include "ft/libft.h"
+# include "ft/utils.h"
 
 typedef struct s_ping_args		t_ping_args;
-
-/*
-** ========================================================================== **
-** ICMP Echo
-*/
-
-# include "net/icmp.h"
-# include "net/raw_socket.h"
-
-typedef union u_icmp_echo_data		t_icmp_echo_data;
-
-/*
-** data			=> Raw data field (see icmp_header)
-** id			=> "Identifier" field
-** seq			=> "Sequence Number" field
-*/
-union			u_icmp_echo_data
-{
-	uint32_t		data;
-	struct {
-		uint16_t		id;
-		uint16_t		seq;
-	};
-};
-
-# define ICMP_ECHO_DATA(ID, SEQ)	((t_icmp_echo_data){.id=(ID), .seq=(SEQ)})
-
-/*
-** Wrapper for icmp_send that send echo-request
-*/
-bool			icmp_echo_send(t_raw_socket *sock, t_icmp_echo_data data,
-					t_sub payload);
-
-/*
-** Wrapper for icmp_recv that ignore packets other than echo-reply
-*/
-uint32_t		icmp_echo_recv(t_raw_socket *sock, t_ip_info *ip_info,
-					t_icmp_echo_data *echo_data, void *buff, uint32_t buff_len);
 
 /*
 ** ========================================================================== **
@@ -62,6 +25,8 @@ uint32_t		icmp_echo_recv(t_raw_socket *sock, t_ip_info *ip_info,
 */
 
 # include "ft/oset.h"
+# include "net/icmp.h"
+# include "net/raw_socket.h"
 
 typedef struct s_ping			t_ping;
 typedef struct s_ping_packet	t_ping_packet;
@@ -127,24 +92,5 @@ struct			s_ping_args
 ** Return false on error, true on success
 */
 bool			parse_argv(int ac, char **av, t_ping_args *dst);
-
-/*
-** ========================================================================== **
-** Utils
-*/
-
-#define HEXDUMP_DEFAULT		VEC2U(2, 8)
-
-/*
-** Show 'size' bytes of 'data'
-** 'layout.x' is the number of byte group and 'layout.y' is the size of a group
-*/
-void			ft_hexdump(void const *data, uint32_t size, t_vec2u layout);
-
-/*
-** Call function 'f' in 't' seconds
-** The function 'f' take 'data' as param
-*/
-void			set_timeout(void (*f)(), void *data, uint32_t t);
 
 #endif

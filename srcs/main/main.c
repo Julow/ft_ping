@@ -6,13 +6,14 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 16:01:26 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 17:57:38 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft/ft_printf.h"
 #include "ft/libft.h"
 #include "net/icmp.h"
+#include "net/icmp_echo.h"
 
 #include "p_main.h"
 

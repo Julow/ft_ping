@@ -1,11 +1,12 @@
 INCLUDE_FLAGS += -I$(O_DIR)/_public
 MAINS += ft_ping
 OBJ_DIR_TREE += $(O_DIR)/srcs/net_utils/ $(O_DIR)/srcs/net_raw_socket/ \
-	$(O_DIR)/srcs/net_icmp/ $(O_DIR)/srcs/main/ $(O_DIR)/srcs/ft_oset/ \
+	$(O_DIR)/srcs/net_icmp/ $(O_DIR)/srcs/main/ $(O_DIR)/srcs/ft_utils/ \
 	$(O_DIR)/srcs/ $(O_DIR)/libft/ft_set/ $(O_DIR)/libft/ft_printf/formats/ \
-	$(O_DIR)/libft/ft_printf/ $(O_DIR)/libft/ft_out/ $(O_DIR)/libft/ft_dstr/ \
-	$(O_DIR)/libft/ft_base/ $(O_DIR)/libft/ft_argv/ $(O_DIR)/libft/ \
-	$(O_DIR)/_public/net/ $(O_DIR)/_public/ft/ $(O_DIR)/_public/ $(O_DIR)/
+	$(O_DIR)/libft/ft_printf/ $(O_DIR)/libft/ft_out/ $(O_DIR)/libft/ft_oset/ \
+	$(O_DIR)/libft/ft_dstr/ $(O_DIR)/libft/ft_base/ $(O_DIR)/libft/ft_argv/ \
+	$(O_DIR)/libft/ $(O_DIR)/_public/net/ $(O_DIR)/_public/ft/ \
+	$(O_DIR)/_public/ $(O_DIR)/
 O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_argv/argv_argv_t.o $(O_DIR)/libft/ft_argv/opt.o \
 	$(O_DIR)/libft/ft_base/ft_abs.o $(O_DIR)/libft/ft_base/ft_assert.o \
@@ -27,7 +28,7 @@ O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_base/ft_wstrlen.o $(O_DIR)/libft/ft_base/ft_wstrnconv.o \
 	$(O_DIR)/libft/ft_dstr/ft_dstradd.o $(O_DIR)/libft/ft_dstr/ft_dstrclear.o \
 	$(O_DIR)/libft/ft_dstr/ft_dstrextend.o \
-	$(O_DIR)/libft/ft_dstr/ft_dstrspan.o $(O_DIR)/srcs/ft_oset/oset.o \
+	$(O_DIR)/libft/ft_dstr/ft_dstrspan.o $(O_DIR)/libft/ft_oset/oset.o \
 	$(O_DIR)/libft/ft_out/ft_putchar.o $(O_DIR)/libft/ft_out/ft_putendl.o \
 	$(O_DIR)/libft/ft_out/ft_putfloat.o $(O_DIR)/libft/ft_out/ft_putint.o \
 	$(O_DIR)/libft/ft_out/ft_putnchar.o $(O_DIR)/libft/ft_out/ft_putpad.o \
@@ -48,17 +49,19 @@ O_FILES += $(O_DIR)/libft/ft_argv/arg.o $(O_DIR)/libft/ft_argv/argv_argv.o \
 	$(O_DIR)/libft/ft_set/first.o $(O_DIR)/libft/ft_set/get.o \
 	$(O_DIR)/libft/ft_set/insert.o $(O_DIR)/libft/ft_set/iter.o \
 	$(O_DIR)/libft/ft_set/remove.o $(O_DIR)/libft/ft_set/utils.o \
-	$(O_DIR)/srcs/main/hexdump.o $(O_DIR)/srcs/main/icmp_echo.o \
+	$(O_DIR)/srcs/ft_utils/hexdump.o $(O_DIR)/srcs/ft_utils/set_timeout.o \
 	$(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
-	$(O_DIR)/srcs/main/ping.o $(O_DIR)/srcs/main/set_timeout.o \
-	$(O_DIR)/srcs/net_icmp/icmp.o $(O_DIR)/srcs/net_raw_socket/raw_socket.o \
+	$(O_DIR)/srcs/main/ping_recv_loop.o $(O_DIR)/srcs/main/ping_send.o \
+	$(O_DIR)/srcs/net_icmp/icmp.o $(O_DIR)/srcs/net_icmp/icmp_echo.o \
+	$(O_DIR)/srcs/net_raw_socket/raw_socket.o \
 	$(O_DIR)/srcs/net_utils/net_checksum.o
 PUBLIC_LINKS += $(O_DIR)/_public/ft/argv.h $(O_DIR)/_public/ft/ft_colors.h \
 	$(O_DIR)/_public/ft/ft_dstr.h $(O_DIR)/_public/ft/ft_out.h \
 	$(O_DIR)/_public/ft/ft_printf.h $(O_DIR)/_public/ft/ft_str_out.h \
 	$(O_DIR)/_public/ft/ft_vprintf.h $(O_DIR)/_public/ft/ft_wchar.h \
 	$(O_DIR)/_public/ft/libft.h $(O_DIR)/_public/ft/oset.h \
-	$(O_DIR)/_public/ft/set.h $(O_DIR)/_public/net/icmp.h \
+	$(O_DIR)/_public/ft/set.h $(O_DIR)/_public/ft/utils.h \
+	$(O_DIR)/_public/net/icmp.h $(O_DIR)/_public/net/icmp_echo.h \
 	$(O_DIR)/_public/net/raw_socket.h $(O_DIR)/_public/net/utils.h
 
 ft_ping: $(O_FILES)
@@ -179,8 +182,9 @@ $(O_DIR)/libft/ft_dstr/ft_dstrspan.o: libft/ft_dstr/ft_dstrspan.c \
 	libft/ft_base/public/libft.h libft/ft_dstr/public/ft_dstr.h
 
 # module ft::oset
-$(O_DIR)/srcs/ft_oset/oset.o: srcs/ft_oset/oset.c libft/ft_base/public/libft.h \
-	libft/ft_set/public/set.h srcs/ft_oset/public/oset.h
+$(O_DIR)/libft/ft_oset/oset.o: libft/ft_oset/oset.c \
+	libft/ft_base/public/libft.h libft/ft_oset/public/oset.h \
+	libft/ft_set/public/set.h
 
 # module ft::out
 $(O_DIR)/libft/ft_out/ft_putchar.o: libft/ft_out/ft_putchar.c \
@@ -325,47 +329,58 @@ $(O_DIR)/libft/ft_set/insert.o $(O_DIR)/libft/ft_set/iter.o \
 $(O_DIR)/libft/ft_set/remove.o $(O_DIR)/libft/ft_set/utils.o: INCLUDE_FLAGS += \
 	-Ilibft/ft_set
 
-# module ft_ping
-$(O_DIR)/srcs/main/hexdump.o: srcs/main/hexdump.c libft/ft_argv/public/argv.h \
-	libft/ft_base/public/libft.h libft/ft_set/public/set.h \
-	srcs/ft_oset/public/oset.h srcs/main/p_main.h srcs/net_icmp/public/icmp.h \
-	srcs/net_raw_socket/public/raw_socket.h
-$(O_DIR)/srcs/main/icmp_echo.o: srcs/main/icmp_echo.c \
-	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
-	libft/ft_set/public/set.h srcs/ft_oset/public/oset.h srcs/main/p_main.h \
-	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h
-$(O_DIR)/srcs/main/main.o: srcs/main/main.c libft/ft_argv/public/argv.h \
+# module ft::utils
+$(O_DIR)/srcs/ft_utils/hexdump.o: srcs/ft_utils/hexdump.c \
 	libft/ft_base/public/libft.h libft/ft_dstr/public/ft_dstr.h \
 	libft/ft_out/public/ft_out.h libft/ft_printf/public/ft_printf.h \
-	libft/ft_set/public/set.h srcs/ft_oset/public/oset.h srcs/main/p_main.h \
-	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h
+	srcs/ft_utils/public/utils.h
+$(O_DIR)/srcs/ft_utils/set_timeout.o: srcs/ft_utils/set_timeout.c \
+	libft/ft_base/public/libft.h srcs/ft_utils/public/utils.h
+
+# module ft_ping
+$(O_DIR)/srcs/main/main.o: srcs/main/main.c libft/ft_argv/public/argv.h \
+	libft/ft_base/public/libft.h libft/ft_dstr/public/ft_dstr.h \
+	libft/ft_oset/public/oset.h libft/ft_out/public/ft_out.h \
+	libft/ft_printf/public/ft_printf.h libft/ft_set/public/set.h \
+	srcs/ft_utils/public/utils.h srcs/main/p_main.h \
+	srcs/net_icmp/public/icmp.h srcs/net_icmp/public/icmp_echo.h \
+	srcs/net_raw_socket/public/raw_socket.h
 $(O_DIR)/srcs/main/parse_argv.o: srcs/main/parse_argv.c \
 	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
-	libft/ft_dstr/public/ft_dstr.h libft/ft_out/public/ft_out.h \
-	libft/ft_printf/public/ft_printf.h libft/ft_printf/public/ft_vprintf.h \
-	libft/ft_set/public/set.h srcs/ft_oset/public/oset.h srcs/main/p_main.h \
+	libft/ft_dstr/public/ft_dstr.h libft/ft_oset/public/oset.h \
+	libft/ft_out/public/ft_out.h libft/ft_printf/public/ft_printf.h \
+	libft/ft_printf/public/ft_vprintf.h libft/ft_set/public/set.h \
+	srcs/ft_utils/public/utils.h srcs/main/p_main.h \
 	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h
-$(O_DIR)/srcs/main/ping.o: srcs/main/ping.c libft/ft_argv/public/argv.h \
-	libft/ft_base/public/libft.h libft/ft_set/public/set.h \
-	srcs/ft_oset/public/oset.h srcs/main/p_main.h srcs/net_icmp/public/icmp.h \
-	srcs/net_raw_socket/public/raw_socket.h
-$(O_DIR)/srcs/main/set_timeout.o: srcs/main/set_timeout.c \
+$(O_DIR)/srcs/main/ping_recv_loop.o: srcs/main/ping_recv_loop.c \
 	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
-	libft/ft_set/public/set.h srcs/ft_oset/public/oset.h srcs/main/p_main.h \
-	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h
+	libft/ft_dstr/public/ft_dstr.h libft/ft_oset/public/oset.h \
+	libft/ft_out/public/ft_out.h libft/ft_printf/public/ft_printf.h \
+	libft/ft_set/public/set.h srcs/ft_utils/public/utils.h srcs/main/p_main.h \
+	srcs/net_icmp/public/icmp.h srcs/net_icmp/public/icmp_echo.h \
+	srcs/net_raw_socket/public/raw_socket.h
+$(O_DIR)/srcs/main/ping_send.o: srcs/main/ping_send.c \
+	libft/ft_argv/public/argv.h libft/ft_base/public/libft.h \
+	libft/ft_oset/public/oset.h libft/ft_set/public/set.h \
+	srcs/ft_utils/public/utils.h srcs/main/p_main.h \
+	srcs/net_icmp/public/icmp.h srcs/net_icmp/public/icmp_echo.h \
+	srcs/net_raw_socket/public/raw_socket.h
 
-$(O_DIR)/srcs/main/hexdump.o $(O_DIR)/srcs/main/icmp_echo.o \
 $(O_DIR)/srcs/main/main.o $(O_DIR)/srcs/main/parse_argv.o \
-$(O_DIR)/srcs/main/ping.o $(O_DIR)/srcs/main/set_timeout.o: INCLUDE_FLAGS += \
-	-Isrcs/main
+$(O_DIR)/srcs/main/ping_recv_loop.o $(O_DIR)/srcs/main/ping_send.o: \
+	INCLUDE_FLAGS += -Isrcs/main
 
 # module net::icmp
 $(O_DIR)/srcs/net_icmp/icmp.o: srcs/net_icmp/icmp.c \
 	libft/ft_base/public/libft.h srcs/net_icmp/p_icmp.h \
 	srcs/net_icmp/public/icmp.h srcs/net_raw_socket/public/raw_socket.h \
 	srcs/net_utils/public/utils.h
+$(O_DIR)/srcs/net_icmp/icmp_echo.o: srcs/net_icmp/icmp_echo.c \
+	libft/ft_base/public/libft.h srcs/net_icmp/public/icmp.h \
+	srcs/net_icmp/public/icmp_echo.h srcs/net_raw_socket/public/raw_socket.h
 
-$(O_DIR)/srcs/net_icmp/icmp.o: INCLUDE_FLAGS += -Isrcs/net_icmp
+$(O_DIR)/srcs/net_icmp/icmp.o $(O_DIR)/srcs/net_icmp/icmp_echo.o: \
+	INCLUDE_FLAGS += -Isrcs/net_icmp
 
 # module net::raw_socket
 $(O_DIR)/srcs/net_raw_socket/raw_socket.o: srcs/net_raw_socket/raw_socket.c \
@@ -385,8 +400,10 @@ $(O_DIR)/_public/ft/ft_str_out.h: libft/ft_out/public/ft_str_out.h
 $(O_DIR)/_public/ft/ft_vprintf.h: libft/ft_printf/public/ft_vprintf.h
 $(O_DIR)/_public/ft/ft_wchar.h: libft/ft_base/public/ft_wchar.h
 $(O_DIR)/_public/ft/libft.h: libft/ft_base/public/libft.h
-$(O_DIR)/_public/ft/oset.h: srcs/ft_oset/public/oset.h
+$(O_DIR)/_public/ft/oset.h: libft/ft_oset/public/oset.h
 $(O_DIR)/_public/ft/set.h: libft/ft_set/public/set.h
+$(O_DIR)/_public/ft/utils.h: srcs/ft_utils/public/utils.h
 $(O_DIR)/_public/net/icmp.h: srcs/net_icmp/public/icmp.h
+$(O_DIR)/_public/net/icmp_echo.h: srcs/net_icmp/public/icmp_echo.h
 $(O_DIR)/_public/net/raw_socket.h: srcs/net_raw_socket/public/raw_socket.h
 $(O_DIR)/_public/net/utils.h: srcs/net_utils/public/utils.h

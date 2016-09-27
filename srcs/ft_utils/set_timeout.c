@@ -6,11 +6,11 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/24 17:05:08 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 17:05:33 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 18:00:26 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "p_main.h"
+#include "ft/utils.h"
 
 #include <signal.h>
 #include <unistd.h>

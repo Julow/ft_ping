@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 16:47:34 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 18:08:51 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ bool			parse_argv(int ac, char **av, t_ping_args *dst)
 		.flags = 0,
 		.count = 0,
 		.wait = 1,
+		.timeout = 5,
 		.inc_size = 0,
 		.max_size = 96,
 		.payload_pattern = SUBC(PING_DEFAULT_PAYLOAD),

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/24 17:04:41 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 15:50:39 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 16:01:49 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void			ping_recvloop(t_ping *ping)
 				ft_hexdump(buff, len, HEXDUMP_DEFAULT);
 		}
 		free(p);
-		ping->to_receive--; // TODO: replace to_receive with a simple bool/flag
+		ping->to_receive--;
 	}
 }
 
@@ -94,10 +94,26 @@ static void		ping_push_packet(t_ping *ping)
 	ft_oset_insert(&ping->sent_packets, p, &p->seq_number);
 }
 
+static void		ping_pop_timeout(t_ping *ping)
+{
+	t_ping_packet	*p;
+
+	while ((p = ping->sent_packets.first) != NULL)
+	{
+		if (ft_clock(p->timestamp) >= ping->timeout)
+		{
+			TRACE("TIMEOUT");
+			ft_oset_remove(&ping->sent_packets, p);
+			free(p);
+		}
+	}
+}
+
 bool			ping_send(t_ping *ping)
 {
 	char		payload[ping->payload_size];
 
+	ping_pop_timeout(ping);
 	fill_payload(ping, payload);
 	if (!icmp_echo_send(ping->sock,
 			ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),

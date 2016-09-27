@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 14:26:43 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 16:05:58 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 "  --preload=<preload>   Send <preload> packet at the begining (default: 1)\n"
 "  -m <ttl>\n"
 "  --ttl=<ttl>           Set the Time-To-Live value\n"
+"  -t <timeout>\n"
+"  --timeout=<timeout>   Number of second to consider a packet lost\n"
 "  -p\n"
 "  --print               Print packet content in hexdump format\n"
 "  -q\n"
@@ -72,6 +74,7 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_FLAG("q", PING_F_QUIET, offsetof(t_ping_args, flags)),
 	ARGV_OPT_UINT("l", (1, UINT_MAX), offsetof(t_ping_args, preload)),
 	ARGV_OPT_UINT("i", (1, UINT_MAX), offsetof(t_ping_args, wait)),
+	ARGV_OPT_UINT("t", (1, UINT_MAX), offsetof(t_ping_args, timeout)),
 	ARGV_OPT_UINT("m", (1, UINT_MAX), offsetof(t_ping_args, ttl)),
 	ARGV_OPT_FUNC("?", &opt_help, 0),
 	ARGV_OPT_ALIAS("count", "c"),
@@ -83,6 +86,7 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_ALIAS("increment", "h"),
 	ARGV_OPT_ALIAS("max-increment", "G"),
 	ARGV_OPT_ALIAS("wait", "i"),
+	ARGV_OPT_ALIAS("timeout", "t"),
 	ARGV_OPT_ALIAS("ttl", "m"),
 	ARGV_OPT_ALIAS("help", "?"),
 };

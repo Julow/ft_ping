@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 15:33:28 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 16:01:26 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 		.sock = sock,
 		.sent_packets = OSET(&ping_packet_cmp, 0),
 		.host_name = args->host,
+		.timeout = args->timeout * T_SEC,
 		.wait_time = args->wait,
 		.flags = args->flags,
 		.echo_id = getpid(),

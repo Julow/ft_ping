@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 15:32:34 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 16:01:14 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ struct			s_ping
 	t_oset			sent_packets;
 	char const		*host_name;
 	uint32_t const	flags;
+	uint64_t const	timeout;
 	uint32_t const	wait_time;
 	uint16_t const	echo_id;
 	uint16_t		echo_seq;
@@ -119,6 +120,7 @@ struct			s_ping_args
 	uint32_t		flags;
 	uint32_t		count;
 	uint32_t		wait;
+	uint32_t		timeout;
 	int32_t			inc_size;
 	uint32_t		max_size;
 	t_sub			payload_pattern;

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:39:13 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 14:19:09 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 14:26:58 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ struct			s_icmp_header
 	uint16_t		checksum;
 	uint32_t		data;
 };
+
+# define ICMP_MAX_SIZE		65507
 
 /*
 ** Send an ICMP packet

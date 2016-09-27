@@ -3,6 +3,7 @@ main module ft_ping:
 
 	require ft::argv
 	require ft::base
+	require ft::oset
 	require ft::printf
 	require net::icmp
 	require net::raw_socket

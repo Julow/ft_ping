@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 14:21:27 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 15:32:34 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,15 @@ uint32_t		icmp_echo_recv(t_raw_socket *sock, t_ip_info *ip_info,
 ** Ping
 */
 
+# include "ft/oset.h"
+
 typedef struct s_ping			t_ping;
+typedef struct s_ping_packet	t_ping_packet;
 
 struct			s_ping
 {
 	t_raw_socket	*sock;
+	t_oset			sent_packets;
 	char const		*host_name;
 	uint32_t const	flags;
 	uint32_t const	wait_time;
@@ -78,6 +82,13 @@ struct			s_ping
 	uint32_t		payload_size;
 	int32_t const	payload_inc;
 	uint32_t const	payload_max;
+};
+
+struct			s_ping_packet
+{
+	t_oset_h		set_h;
+	uint32_t		seq_number;
+	uint64_t		timestamp;
 };
 
 # define PING_F_PRINT		(1 << 0)

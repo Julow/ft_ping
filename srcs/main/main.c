@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 14:13:26 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/27 15:33:28 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,21 @@ static bool		send_preload(t_ping *ping, uint32_t p)
 	return (true);
 }
 
+static int		ping_packet_cmp(t_ping_packet const *a, uint32_t const *key)
+{
+	if (a->seq_number < *key)
+		return (-1);
+	else
+		return ((a->seq_number > *key) ? 1 : 0);
+}
+
 static bool		ping(t_raw_socket *sock, t_ping_args const *args)
 {
 	t_ping			ping;
 
 	ping = (t_ping){
 		.sock = sock,
+		.sent_packets = OSET(&ping_packet_cmp, 0),
 		.host_name = args->host,
 		.wait_time = args->wait,
 		.flags = args->flags,

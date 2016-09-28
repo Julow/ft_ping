@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:39:13 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 14:26:58 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:22:09 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,34 +14,16 @@
 # define NET__ICMP_H
 
 # include "ft/libft.h"
+# include "net/utils.h"
+
 # include "raw_socket.h"
 
-typedef struct s_ip_info			t_ip_info;
 typedef struct s_icmp_header		t_icmp_header;
 
 /*
 ** ========================================================================== **
 ** ICMP Proto
 */
-
-/*
-** Some info that come with the IP header
-** version		=> ip version
-** max_hop		=> hop limit (ttl)
-** protocol		=> protocol id
-** size			=> total packet size
-*/
-struct			s_ip_info
-{
-	uint8_t			version;
-	uint8_t			max_hop;
-	uint8_t			protocol;
-	uint16_t		size;
-	union {
-		struct in_addr	v4;
-		struct in6_addr	v6;
-	}				src_addr;
-};
 
 /*
 ** ICMP header

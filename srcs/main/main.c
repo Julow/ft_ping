@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:32:35 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:47:27 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 #include <errno.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -88,7 +89,6 @@ static void		ping(t_raw_socket *sock, t_ping_args const *args)
 	print_status(&ping);
 	send_preload(&ping, args->preload);
 	ping_recvloop(&ping);
-	HARD_ASSERT(!"Should not have exit");
 }
 
 int				main(int argc, char **argv)

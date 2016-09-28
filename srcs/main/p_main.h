@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:32:14 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:47:17 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ struct			s_ping_packet
 
 # define PING_DANGEROUS_DELTA_T	(T_MSEC)
 
+__attribute__ ((noreturn))
 void			ping_recvloop(t_ping *ping);
 
 bool			ping_send(t_ping *ping);

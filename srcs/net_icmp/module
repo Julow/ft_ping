@@ -4,5 +4,4 @@ module net::icmp:
 
 	public require ft::base
 	public require net::raw_socket
-
-	private require net::utils
+	public require net::utils

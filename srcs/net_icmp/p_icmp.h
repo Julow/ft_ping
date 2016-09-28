@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:43:28 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 19:28:25 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:24:19 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ typedef struct s_ipv6_header		t_ipv6_header;
 
 /*
 ** ========================================================================== **
+** TODO: move it to net::utils
 */
 
 struct			s_ipv4_header

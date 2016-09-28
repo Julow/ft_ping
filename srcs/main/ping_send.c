@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:33:48 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:41:22 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "p_main.h"
 
 #include <stdlib.h>
+#include <unistd.h>
 
 static void		fill_payload(t_ping const *ping, char *dst)
 {

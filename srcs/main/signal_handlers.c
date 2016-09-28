@@ -6,12 +6,14 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 19:26:43 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:29:12 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:46:45 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "p_main.h"
+
 #include <signal.h>
+#include <stdlib.h>
 
 static t_ping	*g_ping_singleton = NULL;
 

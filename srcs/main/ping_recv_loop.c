@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:32:20 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:47:08 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,36 @@
 
 #include "p_main.h"
 
+#include <netdb.h>
 #include <stdlib.h>
+
+static bool		get_host_name(t_ip_info const *ip_info, char *buff,
+					uint32_t buff_size)
+{
+	struct sockaddr_storage	sa;
+	uint32_t				sa_len;
+
+	sa_len = sockaddr_of_ipinfo(&sa, ip_info);
+	if (getnameinfo(V(&sa), sa_len, buff, buff_size, NULL, 0, NI_NAMEREQD) != 0)
+		return (false);
+	return (true);
+}
 
 static void		print_reply(uint32_t total_size, t_ip_info const *ip_info,
 					t_icmp_echo_data const *echo_data, uint64_t delta_t)
 {
 	char			addr_buff[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
+	char			name_buff[128];
 
 	inet_ntop(((ip_info->version == 6) ? AF_INET6 : AF_INET),
 			&ip_info->src_addr, addr_buff, sizeof(addr_buff));
-	ft_printf("%u bytes from %s: icmp_seq=%u ttl=%u time=%u.%0.3u ms%n",
-			total_size, addr_buff, echo_data->seq, ip_info->max_hop,
+	ft_printf("%u bytes from ", total_size);
+	if (get_host_name(ip_info, name_buff, sizeof(name_buff)))
+		ft_printf("%s (%s)", name_buff, addr_buff);
+	else
+		ft_printf("%s", addr_buff);
+	ft_printf(": icmp_seq=%u ttl=%u time=%u.%0.3u ms%n",
+			echo_data->seq, ip_info->max_hop,
 			delta_t / 1000, delta_t % 1000);
 }
 
@@ -74,6 +93,7 @@ static void		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
 	}
 }
 
+__attribute__ ((noreturn))
 void			ping_recvloop(t_ping *ping)
 {
 	uint32_t			len;

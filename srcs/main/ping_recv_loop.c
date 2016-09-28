@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:09:55 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 18:01:02 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,6 @@ void			ping_recvloop(t_ping *ping)
 	while (true)
 	{
 		len = icmp_recv(ping->sock, &ip_info, &icmp_header, buff, sizeof(buff));
-		if (len == 0)
-			continue ;
 		if (icmp_is_echo_reply(&icmp_header, &echo_data)
 			&& ping_recved_echo(ping, &ip_info, &echo_data, SUB(buff, len)))
 			;

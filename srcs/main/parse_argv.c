@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 11:57:35 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 16:25:47 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 "  --ttl=<ttl>           Set the Time-To-Live value\n"
 "  -t <timeout>\n"
 "  --timeout=<timeout>   Timeout in second to wait for a packet (default: 5)\n"
+"  -n\n"
+"  --no-lookup           Do not try to resolve host name\n"
 "  -p\n"
 "  --print               Print packet content in hexdump format\n"
 "  -q\n"
@@ -77,7 +79,8 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_UINT("l", (1, UINT_MAX), offsetof(t_ping_args, preload)),
 	ARGV_OPT_UINT("i", (1, UINT_MAX), offsetof(t_ping_args, wait)),
 	ARGV_OPT_UINT("t", (1, UINT_MAX), offsetof(t_ping_args, timeout)),
-	ARGV_OPT_UINT("m", (1, UINT_MAX), offsetof(t_ping_args, ttl)),
+	ARGV_OPT_UINT("m", (1, 255), offsetof(t_ping_args, ttl)),
+	ARGV_OPT_FLAG("n", PING_F_NO_LOOKUP, offsetof(t_ping_args, flags)),
 	ARGV_OPT_FLAG("v", PING_F_VERBOSE, offsetof(t_ping_args, flags)),
 	ARGV_OPT_FUNC("?", &opt_help, 0),
 	ARGV_OPT_ALIAS("count", "c"),
@@ -91,6 +94,7 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_ALIAS("wait", "i"),
 	ARGV_OPT_ALIAS("timeout", "t"),
 	ARGV_OPT_ALIAS("ttl", "m"),
+	ARGV_OPT_ALIAS("no-lookup", "n"),
 	ARGV_OPT_ALIAS("verbose", "v"),
 	ARGV_OPT_ALIAS("help", "?"),
 };

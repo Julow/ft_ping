@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:53:37 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 16:41:49 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ struct			s_ping_packet
 # define PING_F_PRINT		(1 << 0)
 # define PING_F_QUIET		(1 << 1)
 # define PING_F_VERBOSE		(1 << 2)
+# define PING_F_NO_LOOKUP	(1 << 3)
 
 # define PING_DANGEROUS_DELTA_T	(T_MSEC)
 

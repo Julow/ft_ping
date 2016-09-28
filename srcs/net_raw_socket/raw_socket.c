@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:23:55 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 10:42:38 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 16:55:17 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ void			raw_socket_addr(t_raw_socket const *s, char *dst)
 	void const		*addr;
 
 	addr = (s->flags & RAW_SOCKET_F_IPV6)
-		? (void const*)&((struct sockaddr_in const*)s->addr)->sin_addr
-		: (void const*)&((struct sockaddr_in6 const*)s->addr)->sin6_addr;
+		? (void const*)&((struct sockaddr_in6 const*)s->addr)->sin6_addr
+		: (void const*)&((struct sockaddr_in const*)s->addr)->sin_addr;
 	if (inet_ntop(((s->flags & RAW_SOCKET_F_IPV6) ? AF_INET6 : AF_INET),
 				addr, dst, RAW_SOCKET_ADDR_LEN) == NULL)
 		*dst = '\0';

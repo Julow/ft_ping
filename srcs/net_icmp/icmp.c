@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:40:51 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 15:15:59 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 19:02:16 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ bool			icmp_send(t_raw_socket *sock, t_icmp_header const *header,
 {
 	char					msg[sizeof(t_icmp_header) + payload.length];
 	t_icmp_header *const	dst_header = (t_icmp_header*)msg;
-
-	ASSERT(!(sock->flags & RAW_SOCKET_F_IPV6), "icmp send do not support ipv6 yet");
 
 	*dst_header = *header;
 	dst_header->checksum = 0;

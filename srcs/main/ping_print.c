@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/28 14:03:21 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:49:55 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 16:32:39 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static char const *const	g_icmp_type_names[255] = {
 	[30] = "Traceroute",
 };
 
-static void		print_host_name(t_ip_info const *ip_info)
+static void		print_host_name(t_ping const *ping, t_ip_info const *ip_info)
 {
 	char					addr_buff[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
 	char					name_buff[256];
@@ -44,8 +44,8 @@ static void		print_host_name(t_ip_info const *ip_info)
 	inet_ntop(((ip_info->version == 6) ? AF_INET6 : AF_INET),
 			&ip_info->src_addr, addr_buff, sizeof(addr_buff));
 	sa_len = sockaddr_of_ipinfo(&sa, ip_info);
-	if (getnameinfo(V(&sa), sa_len, name_buff, sizeof(name_buff),
-				NULL, 0, NI_NAMEREQD) == 0)
+	if (!(ping->flags & PING_F_NO_LOOKUP) &&  getnameinfo(V(&sa), sa_len,
+			name_buff, sizeof(name_buff), NULL, 0, NI_NAMEREQD) == 0)
 		ft_printf("%s (%s)", name_buff, addr_buff);
 	else
 		ft_printf("%s", addr_buff);
@@ -58,7 +58,7 @@ void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
 					t_sub payload)
 {
 	ft_printf("%u bytes from ", payload.length + sizeof(t_icmp_header));
-	print_host_name(ip_info);
+	print_host_name(ping, ip_info);
 	ft_printf(": icmp_seq=%u ttl=%u time=%u.%0.3u ms%n",
 			echo_data->seq, ip_info->max_hop, USEC_TO_MSEC_VEC(delta_t));
 	if (ping->flags & PING_F_PRINT)
@@ -69,7 +69,7 @@ void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
 					t_icmp_header const *icmp_header, t_sub payload)
 {
 	ft_printf("[v] %u bytes from ", payload.length);
-	print_host_name(ip_info);
+	print_host_name(ping, ip_info);
 	ft_printf(": type=%u", icmp_header->type);
 	if (g_icmp_type_names[icmp_header->type] != NULL)
 		ft_printf(" \"%s\"", g_icmp_type_names[icmp_header->type]);
@@ -85,7 +85,7 @@ void			ping_print_stats(t_ping const *ping)
 	ft_printf("%u packets transmitted, %u packets received, %u%% packet loss%n",
 			ping->total_sent, ping->total_received,
 			100 - ((ping->total_received == 0) ? 0 :
-							ping->total_sent * 100 / ping->total_received));
+							ping->total_received * 100 / ping->total_sent));
 	if (ping->total_received != ping->total_sent)
 		ft_printf("    (%u timeout, %u pending)%n", ping->total_timeout,
 				ping->total_sent - ping->total_received - ping->total_timeout);

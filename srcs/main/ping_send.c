@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:44:22 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 15:05:57 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,30 +66,41 @@ void			ping_exit(t_ping *ping)
 	exit((ping->total_received == 0) ? 1 : 0);
 }
 
+static bool		ping_end(t_ping *ping)
+{
+	if (ping->sent >= ping->count)
+	{
+		if (ping->payload_inc != 0)
+		{
+			if ((ping->payload_size + ping->payload_inc) >= ping->payload_max)
+				return (true);
+			ping->payload_size += ping->payload_inc;
+			ping->sent = 0;
+		}
+		else if (ping->count != 0)
+			return (true);
+	}
+	return (false);
+}
+
 void			ping_send(t_ping *ping)
 {
 	char		payload[ping->payload_size];
 
 	ping_pop_timeout(ping);
-	fill_payload(ping, payload);
-	if (!icmp_echo_send(ping->sock,
-			ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
-			SUB(payload, sizeof(payload))))
-		exit(1);
-	ping_push_packet(ping);
-	ping->echo_seq++;
-	ping->sent++;
-	ping->total_sent++;
-	if (ping->sent >= ping->count)
+	if (!ping_end(ping))
 	{
-		if (ping->payload_inc != 0)
-		{
-			if ((ping->payload_size += ping->payload_inc) >= ping->payload_max)
-				ping_exit(ping);
-			ping->sent = 0;
-		}
-		else if (ping->count != 0)
-			ping_exit(ping);
+		fill_payload(ping, payload);
+		if (!icmp_echo_send(ping->sock,
+				ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
+				SUB(payload, sizeof(payload))))
+			exit(1);
+		ping_push_packet(ping);
+		ping->echo_seq++;
+		ping->sent++;
+		ping->total_sent++;
 	}
+	else if (ping->sent_packets.set.count == 0)
+		ping_exit(ping);
 	alarm(ping->wait_time);
 }

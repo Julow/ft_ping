@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:40:51 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/24 14:20:14 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 15:15:59 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@ bool			icmp_send(t_raw_socket *sock, t_icmp_header const *header,
 	dst_header->checksum = 0;
 	ft_memcpy(ENDOF(dst_header), payload.str, payload.length);
 	dst_header->checksum = net_checksum(msg, sizeof(msg));
-
 	ASSERT(net_checksum(msg, sizeof(msg)) == 0);
-	// print_icmp_packet(dst_header, payload);
 	if (sendto(sock->fd, msg, sizeof(msg), 0, sock->addr, sock->addr_len) < 0)
 	{
 		ft_dprintf(2, "sendto: %s%n", strerror(errno));

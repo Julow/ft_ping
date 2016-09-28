@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/28 14:03:21 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:11:34 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 14:49:55 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static char const *const	g_icmp_type_names[255] = {
 static void		print_host_name(t_ip_info const *ip_info)
 {
 	char					addr_buff[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
-	char					name_buff[128];
+	char					name_buff[256];
 	struct sockaddr_storage	sa;
 	uint32_t				sa_len;
 
@@ -51,6 +51,8 @@ static void		print_host_name(t_ip_info const *ip_info)
 		ft_printf("%s", addr_buff);
 }
 
+#define USEC_TO_MSEC_VEC(U)	((uint32_t)((U)/T_MSEC)), ((uint32_t)((U)%T_MSEC))
+
 void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
 					t_icmp_echo_data const *echo_data, uint64_t delta_t,
 					t_sub payload)
@@ -58,8 +60,7 @@ void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
 	ft_printf("%u bytes from ", payload.length + sizeof(t_icmp_header));
 	print_host_name(ip_info);
 	ft_printf(": icmp_seq=%u ttl=%u time=%u.%0.3u ms%n",
-			echo_data->seq, ip_info->max_hop,
-			(uint32_t)(delta_t / 1000), (uint32_t)(delta_t % 1000));
+			echo_data->seq, ip_info->max_hop, USEC_TO_MSEC_VEC(delta_t));
 	if (ping->flags & PING_F_PRINT)
 		ft_hexdump(payload.str, payload.length, HEXDUMP_DEFAULT);
 }
@@ -76,4 +77,21 @@ void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
 			icmp_header->code, icmp_header->data, ip_info->max_hop);
 	if (ping->flags & PING_F_PRINT)
 		ft_hexdump(payload.str, payload.length, HEXDUMP_DEFAULT);
+}
+
+void			ping_print_stats(t_ping const *ping)
+{
+	ft_printf("--- %s ping statistics ---\n", ping->host_name);
+	ft_printf("%u packets transmitted, %u packets received, %u%% packet loss%n",
+			ping->total_sent, ping->total_received,
+			100 - ((ping->total_received == 0) ? 0 :
+							ping->total_sent * 100 / ping->total_received));
+	if (ping->total_received != ping->total_sent)
+		ft_printf("    (%u timeout, %u pending)%n", ping->total_timeout,
+				ping->total_sent - ping->total_received - ping->total_timeout);
+	if (ping->total_received > 0)
+		ft_printf("round-trip min/avg/max = %u.%0.3u/%u.%0.3u/%u.%0.3u ms%n",
+				USEC_TO_MSEC_VEC(ping->min_time),
+				USEC_TO_MSEC_VEC(ping->total_time / ping->total_received),
+				USEC_TO_MSEC_VEC(ping->max_time));
 }

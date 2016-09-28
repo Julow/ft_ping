@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:09:18 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 14:37:50 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ struct			s_ping
 	uint32_t const	payload_max;
 	uint32_t		total_sent;
 	uint32_t		total_received;
+	uint32_t		total_timeout;
 	uint64_t		total_time;
 	uint32_t		max_time;
 	uint32_t		min_time;
@@ -71,7 +72,7 @@ struct			s_ping_packet
 __attribute__ ((noreturn))
 void			ping_recvloop(t_ping *ping);
 
-bool			ping_send(t_ping *ping);
+void			ping_send(t_ping *ping);
 
 void			ping_show_stats(t_ping const *ping);
 
@@ -82,6 +83,10 @@ void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
 					t_sub payload);
 void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
 					t_icmp_header const *icmp_header, t_sub payload);
+void			ping_print_stats(t_ping const *ping);
+
+__attribute__ ((noreturn))
+void			ping_exit(t_ping *ping);
 
 /*
 ** ========================================================================== **

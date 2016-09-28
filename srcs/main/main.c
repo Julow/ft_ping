@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 11:47:27 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 14:37:48 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,7 @@ static bool		send_preload(t_ping *ping, uint32_t p)
 {
 	while (p-- > 0)
 	{
-		if (!ping_send(ping))
-			return (false);
+		ping_send(ping);
 	}
 	return (true);
 }
@@ -77,6 +76,7 @@ static void		ping(t_raw_socket *sock, t_ping_args const *args)
 		.payload_max = args->max_size,
 		.total_sent = 0,
 		.total_received = 0,
+		.total_timeout = 0,
 		.total_time = 0,
 	};
 	ping_handle_signals(&ping);

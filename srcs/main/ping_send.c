@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 12:22:24 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 14:44:22 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,22 +50,23 @@ static void		ping_pop_timeout(t_ping *ping)
 
 	while ((p = ping->sent_packets.first) != NULL)
 	{
-		if (ft_clock(p->timestamp) >= ping->timeout)
-		{
-			TRACE("TIMEOUT");
-			ft_oset_remove(&ping->sent_packets, p);
-			free(p);
-		}
+		if (ft_clock(p->timestamp) < ping->timeout)
+			break ;
+		ft_oset_remove(&ping->sent_packets, p);
+		ft_printf("Request timeout for icmp_seq=%u%n", p->seq_number);
+		ping->total_timeout++;
+		free(p);
 	}
 }
 
-static void		ping_exit(t_ping *ping)
+__attribute__ ((noreturn))
+void			ping_exit(t_ping *ping)
 {
-	ping_show_stats(ping);
+	ping_print_stats(ping);
 	exit((ping->total_received == 0) ? 1 : 0);
 }
 
-bool			ping_send(t_ping *ping)
+void			ping_send(t_ping *ping)
 {
 	char		payload[ping->payload_size];
 
@@ -91,5 +92,4 @@ bool			ping_send(t_ping *ping)
 			ping_exit(ping);
 	}
 	alarm(ping->wait_time);
-	return (true);
 }

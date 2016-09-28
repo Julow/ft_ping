@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 11:41:22 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 12:22:24 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static void		ping_pop_timeout(t_ping *ping)
 static void		ping_exit(t_ping *ping)
 {
 	ping_show_stats(ping);
-	exit(0);
+	exit((ping->total_received == 0) ? 1 : 0);
 }
 
 bool			ping_send(t_ping *ping)

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 18:08:51 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 11:57:35 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 "  --print               Print packet content in hexdump format\n"
 "  -q\n"
 "  --quiet               Do not print message when receiving a packet\n"
+"  -v\n"
+"  --verbose             Show packets that would be ignored\n"
 "  -?\n"
 "  --help                Show help\n"
 		"%!", argv->argv[0]);
@@ -76,6 +78,7 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_UINT("i", (1, UINT_MAX), offsetof(t_ping_args, wait)),
 	ARGV_OPT_UINT("t", (1, UINT_MAX), offsetof(t_ping_args, timeout)),
 	ARGV_OPT_UINT("m", (1, UINT_MAX), offsetof(t_ping_args, ttl)),
+	ARGV_OPT_FLAG("v", PING_F_VERBOSE, offsetof(t_ping_args, flags)),
 	ARGV_OPT_FUNC("?", &opt_help, 0),
 	ARGV_OPT_ALIAS("count", "c"),
 	ARGV_OPT_ALIAS("quiet", "q"),
@@ -88,6 +91,7 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_ALIAS("wait", "i"),
 	ARGV_OPT_ALIAS("timeout", "t"),
 	ARGV_OPT_ALIAS("ttl", "m"),
+	ARGV_OPT_ALIAS("verbose", "v"),
 	ARGV_OPT_ALIAS("help", "?"),
 };
 

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 11:47:17 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 14:09:18 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct s_ping_args		t_ping_args;
 
 # include "ft/oset.h"
 # include "net/icmp.h"
+# include "net/icmp_echo.h"
 # include "net/raw_socket.h"
 
 typedef struct s_ping			t_ping;
@@ -63,6 +64,7 @@ struct			s_ping_packet
 
 # define PING_F_PRINT		(1 << 0)
 # define PING_F_QUIET		(1 << 1)
+# define PING_F_VERBOSE		(1 << 2)
 
 # define PING_DANGEROUS_DELTA_T	(T_MSEC)
 
@@ -74,6 +76,12 @@ bool			ping_send(t_ping *ping);
 void			ping_show_stats(t_ping const *ping);
 
 void			ping_handle_signals(t_ping *ping);
+
+void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
+					t_icmp_echo_data const *echo_data, uint64_t delta_t,
+					t_sub payload);
+void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
+					t_icmp_header const *icmp_header, t_sub payload);
 
 /*
 ** ========================================================================== **

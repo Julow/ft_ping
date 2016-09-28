@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 11:47:08 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/28 14:09:55 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,36 +18,6 @@
 
 #include <netdb.h>
 #include <stdlib.h>
-
-static bool		get_host_name(t_ip_info const *ip_info, char *buff,
-					uint32_t buff_size)
-{
-	struct sockaddr_storage	sa;
-	uint32_t				sa_len;
-
-	sa_len = sockaddr_of_ipinfo(&sa, ip_info);
-	if (getnameinfo(V(&sa), sa_len, buff, buff_size, NULL, 0, NI_NAMEREQD) != 0)
-		return (false);
-	return (true);
-}
-
-static void		print_reply(uint32_t total_size, t_ip_info const *ip_info,
-					t_icmp_echo_data const *echo_data, uint64_t delta_t)
-{
-	char			addr_buff[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
-	char			name_buff[128];
-
-	inet_ntop(((ip_info->version == 6) ? AF_INET6 : AF_INET),
-			&ip_info->src_addr, addr_buff, sizeof(addr_buff));
-	ft_printf("%u bytes from ", total_size);
-	if (get_host_name(ip_info, name_buff, sizeof(name_buff)))
-		ft_printf("%s (%s)", name_buff, addr_buff);
-	else
-		ft_printf("%s", addr_buff);
-	ft_printf(": icmp_seq=%u ttl=%u time=%u.%0.3u ms%n",
-			echo_data->seq, ip_info->max_hop,
-			delta_t / 1000, delta_t % 1000);
-}
 
 /*
 ** Retrieve a sent packet by it's sequence number
@@ -69,15 +39,15 @@ static uint64_t	ping_pop_packet(t_ping *ping, uint32_t seq)
 	return (delta_t);
 }
 
-static void		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
+static bool		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
 					t_icmp_echo_data const *echo_data, t_sub payload)
 {
 	uint64_t			delta_t;
 
 	if (echo_data->id != ping->echo_id)
-		return ;
+		return (false);
 	if ((delta_t = ping_pop_packet(ping, echo_data->seq)) == 0)
-		return ;
+		return (false);
 	ping->total_received++;
 	ping->total_time += delta_t;
 	if (ping->max_time < delta_t)
@@ -85,12 +55,8 @@ static void		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
 	if (ping->min_time == 0 || ping->min_time > delta_t)
 		ping->min_time = delta_t;
 	if (!(ping->flags & PING_F_QUIET))
-	{
-		print_reply(payload.length + sizeof(t_icmp_header), ip_info,
-				echo_data, delta_t);
-		if (ping->flags & PING_F_PRINT)
-			ft_hexdump(payload.str, payload.length, HEXDUMP_DEFAULT);
-	}
+		ping_print_reply(ping, ip_info, echo_data, delta_t, payload);
+	return (true);
 }
 
 __attribute__ ((noreturn))
@@ -107,7 +73,10 @@ void			ping_recvloop(t_ping *ping)
 		len = icmp_recv(ping->sock, &ip_info, &icmp_header, buff, sizeof(buff));
 		if (len == 0)
 			continue ;
-		if (icmp_is_echo_reply(&icmp_header, &echo_data))
-			ping_recved_echo(ping, &ip_info, &echo_data, SUB(buff, len));
+		if (icmp_is_echo_reply(&icmp_header, &echo_data)
+			&& ping_recved_echo(ping, &ip_info, &echo_data, SUB(buff, len)))
+			;
+		else if (ping->flags & PING_F_VERBOSE)
+			ping_print_verbose(ping, &ip_info, &icmp_header, SUB(buff, len));
 	}
 }

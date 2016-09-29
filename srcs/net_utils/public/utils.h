@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:42:48 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 11:37:53 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:24:58 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ struct			s_ip_info
 */
 uint32_t		sockaddr_of_ipinfo(struct sockaddr_storage *dst,
 					t_ip_info const *ip_info);
+
 /*
 ** ========================================================================== **
 ** Internet checksum

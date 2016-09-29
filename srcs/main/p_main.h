@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 16:41:49 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:18:23 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,11 @@
 
 # include "ft/argv.h"
 # include "ft/libft.h"
+# include "ft/oset.h"
 # include "ft/utils.h"
+# include "net/icmp.h"
+# include "net/icmp_echo.h"
+# include "net/raw_socket.h"
 
 typedef struct s_ping_args		t_ping_args;
 
@@ -23,11 +27,6 @@ typedef struct s_ping_args		t_ping_args;
 ** ========================================================================== **
 ** Ping
 */
-
-# include "ft/oset.h"
-# include "net/icmp.h"
-# include "net/icmp_echo.h"
-# include "net/raw_socket.h"
 
 typedef struct s_ping			t_ping;
 typedef struct s_ping_packet	t_ping_packet;
@@ -70,7 +69,6 @@ struct			s_ping_packet
 
 # define PING_DANGEROUS_DELTA_T	(T_MSEC)
 
-__attribute__ ((noreturn))
 void			ping_recvloop(t_ping *ping);
 
 void			ping_send(t_ping *ping);
@@ -85,9 +83,6 @@ void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
 void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
 					t_icmp_header const *icmp_header, t_sub payload);
 void			ping_print_stats(t_ping const *ping);
-
-__attribute__ ((noreturn))
-void			ping_exit(t_ping *ping);
 
 /*
 ** ========================================================================== **

@@ -2,3 +2,5 @@ module net::raw_socket:
 	public include public/
 
 	public require ft::base
+
+	private require ft::printf

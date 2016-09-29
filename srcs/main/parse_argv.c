@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 16:25:47 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:14:32 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
-{
-	ft_printf("Usage: %s [options] host\n"
+static char const *const	g_help = "Usage: %s [options] host\n"
 "Options:\n"
 "  -4                    Ipv4 only\n"
 "  -6                    Ipv6 only\n"
@@ -60,7 +58,11 @@ static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
 "  --verbose             Show packets that would be ignored\n"
 "  -?\n"
 "  --help                Show help\n"
-		"%!", argv->argv[0]);
+"%!";
+
+static t_argv_opt_err	opt_help(t_argv *argv, void *dst)
+{
+	ft_printf(g_help, argv->argv[0]);
 	exit(0);
 	(void)dst;
 }
@@ -99,6 +101,21 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_ALIAS("help", "?"),
 };
 
+static t_ping_args const		g_default_args = {
+	.ai_family = AF_UNSPEC,
+	.ttl = 0,
+	.preload = 1,
+	.flags = 0,
+	.count = 0,
+	.wait = 1,
+	.timeout = 5,
+	.inc_size = 0,
+	.max_size = 96,
+	.payload_pattern = SUBC("abcdefghijklmnopqrstuvwxyz"),
+	.payload_size = 48,
+	.host = NULL,
+};
+
 static bool		argv_error(t_argv const *argv, char const *fmt, ...)
 {
 	va_list			ap;
@@ -111,8 +128,6 @@ static bool		argv_error(t_argv const *argv, char const *fmt, ...)
 	return (false);
 }
 
-#define PING_DEFAULT_PAYLOAD	"abcdefghijklmnopqrstuvwxyz"
-
 bool			parse_argv(int ac, char **av, t_ping_args *dst)
 {
 	t_argv			argv;
@@ -120,20 +135,7 @@ bool			parse_argv(int ac, char **av, t_ping_args *dst)
 	t_sub			tmp;
 
 	argv = ARGV(ac, av);
-	*dst = (t_ping_args){
-		.ai_family = AF_UNSPEC,
-		.ttl = 0,
-		.preload = 1,
-		.flags = 0,
-		.count = 0,
-		.wait = 1,
-		.timeout = 5,
-		.inc_size = 0,
-		.max_size = 96,
-		.payload_pattern = SUBC(PING_DEFAULT_PAYLOAD),
-		.payload_size = 48,
-		.host = NULL,
-	};
+	*dst = g_default_args;
 	if ((err = ft_argv_argv(&argv, g_ping_opt,
 				ARRAY_LEN(g_ping_opt), dst)) != ARGV_OPT_OK)
 	{

@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/28 14:03:21 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 16:32:39 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:06:53 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void		print_host_name(t_ping const *ping, t_ip_info const *ip_info)
 	inet_ntop(((ip_info->version == 6) ? AF_INET6 : AF_INET),
 			&ip_info->src_addr, addr_buff, sizeof(addr_buff));
 	sa_len = sockaddr_of_ipinfo(&sa, ip_info);
-	if (!(ping->flags & PING_F_NO_LOOKUP) &&  getnameinfo(V(&sa), sa_len,
+	if (!(ping->flags & PING_F_NO_LOOKUP) && getnameinfo(V(&sa), sa_len,
 			name_buff, sizeof(name_buff), NULL, 0, NI_NAMEREQD) == 0)
 		ft_printf("%s (%s)", name_buff, addr_buff);
 	else

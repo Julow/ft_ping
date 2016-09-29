@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 17:59:22 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 19:29:34 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 16:36:03 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 ** Hexdump
 */
 
-#define HEXDUMP_DEFAULT		VEC2U(2, 8)
+# define HEXDUMP_DEFAULT	VEC2U(2, 8)
 
 /*
 ** Show 'size' bytes of 'data'

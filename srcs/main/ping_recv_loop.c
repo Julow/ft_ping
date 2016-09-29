@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 18:01:02 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:03:17 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,6 @@
 #include <netdb.h>
 #include <stdlib.h>
 
-/*
-** Retrieve a sent packet by it's sequence number
-** Return it's time delta on success, 0 if not found
-*/
 static uint64_t	ping_pop_packet(t_ping *ping, uint32_t seq)
 {
 	t_ping_packet		*p;
@@ -59,7 +55,6 @@ static bool		ping_recved_echo(t_ping *ping, t_ip_info const *ip_info,
 	return (true);
 }
 
-__attribute__ ((noreturn))
 void			ping_recvloop(t_ping *ping)
 {
 	uint32_t			len;

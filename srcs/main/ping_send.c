@@ -6,10 +6,11 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 15:05:57 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:04:49 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft/ft_printf.h"
 #include "net/icmp.h"
 #include "net/icmp_echo.h"
 
@@ -59,13 +60,6 @@ static void		ping_pop_timeout(t_ping *ping)
 	}
 }
 
-__attribute__ ((noreturn))
-void			ping_exit(t_ping *ping)
-{
-	ping_print_stats(ping);
-	exit((ping->total_received == 0) ? 1 : 0);
-}
-
 static bool		ping_end(t_ping *ping)
 {
 	if (ping->sent >= ping->count)
@@ -91,16 +85,19 @@ void			ping_send(t_ping *ping)
 	if (!ping_end(ping))
 	{
 		fill_payload(ping, payload);
+		ping_push_packet(ping);
 		if (!icmp_echo_send(ping->sock,
 				ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
 				SUB(payload, sizeof(payload))))
 			exit(1);
-		ping_push_packet(ping);
 		ping->echo_seq++;
 		ping->sent++;
 		ping->total_sent++;
 	}
 	else if (ping->sent_packets.set.count == 0)
-		ping_exit(ping);
+	{
+		ping_print_stats(ping);
+		exit((ping->total_received == 0) ? 1 : 0);
+	}
 	alarm(ping->wait_time);
 }

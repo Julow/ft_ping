@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 19:26:43 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:27:33 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:08:58 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ static t_ping	*g_ping_singleton = NULL;
 
 static void		handle_sigint(int sig)
 {
-	ping_exit(g_ping_singleton);
+	ping_print_stats(g_ping_singleton);
+	exit((g_ping_singleton->total_received == 0) ? 1 : 0);
 	(void)sig;
 }
 
@@ -35,13 +36,19 @@ static void		handle_siginfo(int sig)
 	(void)sig;
 }
 
+#ifdef SIGINFO
+# define HANDLE_SIGINFO		true
+#else
+# define HANDLE_SIGINFO		false
+# define SIGINFO			0
+#endif
+
 void			ping_handle_signals(t_ping *ping)
 {
 	g_ping_singleton = ping;
 	signal(SIGINT, &handle_sigint);
-#ifdef SIGINFO
-	signal(SIGINFO, &handle_siginfo);
-#endif
+	if (HANDLE_SIGINFO)
+		signal(SIGINFO, &handle_siginfo);
 	signal(SIGQUIT, &handle_siginfo);
 	signal(SIGALRM, &handle_sigalrm);
 }

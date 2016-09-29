@@ -6,10 +6,11 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:40:51 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 19:02:16 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:37:38 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft/ft_printf.h"
 #include "net/icmp.h"
 #include "net/utils.h"
 
@@ -31,23 +32,20 @@ bool			icmp_send(t_raw_socket *sock, t_icmp_header const *header,
 	dst_header->checksum = 0;
 	ft_memcpy(ENDOF(dst_header), payload.str, payload.length);
 	dst_header->checksum = net_checksum(msg, sizeof(msg));
-	ASSERT(net_checksum(msg, sizeof(msg)) == 0);
 	if (sendto(sock->fd, msg, sizeof(msg), 0, sock->addr, sock->addr_len) < 0)
 	{
 		ft_dprintf(2, "sendto: %s%n", strerror(errno));
 		return (false);
 	}
 	return (true);
+	STATIC_ASSERT(sizeof(t_ipv4_header) == 20);
+	STATIC_ASSERT(sizeof(t_ipv6_header) == 40);
+	STATIC_ASSERT(sizeof(t_icmp_header) == 8);
 }
 
-/*
-** Load ip_info from a given ip header
-** Return the size of the header
-*/
 static void		unpack_ip_info(t_ip_header const *header, t_ip_info *dst)
 {
 	if (header->v4.version == 6)
-	{
 		*dst = (t_ip_info){
 			.version = header->v6.version,
 			.max_hop = header->v6.hop_limit,
@@ -55,9 +53,7 @@ static void		unpack_ip_info(t_ip_header const *header, t_ip_info *dst)
 			.size = header->v6.payload_length + sizeof(t_ipv6_header),
 			.src_addr.v6 = header->v6.src_addr,
 		};
-	}
 	else
-	{
 		*dst = (t_ip_info){
 			.version = header->v4.version,
 			.max_hop = header->v4.ttl,
@@ -65,7 +61,6 @@ static void		unpack_ip_info(t_ip_header const *header, t_ip_info *dst)
 			.size = header->v4.length,
 			.src_addr.v4 = header->v4.src_addr,
 		};
-	}
 }
 
 uint32_t		icmp_recv(t_raw_socket *sock, t_ip_info *ip_info,
@@ -86,9 +81,6 @@ uint32_t		icmp_recv(t_raw_socket *sock, t_ip_info *ip_info,
 		.msg_namelen = sock->addr_len,
 		.msg_iov = iovec,
 		.msg_iovlen = ARRAY_LEN(iovec),
-		.msg_control = NULL,
-		.msg_controllen = 0,
-		.msg_flags = 0,
 	};
 	if ((len = recvmsg(sock->fd, &msg, 0)) < 0)
 	{
@@ -96,13 +88,7 @@ uint32_t		icmp_recv(t_raw_socket *sock, t_ip_info *ip_info,
 		return (0);
 	}
 	if ((len -= (iovec[0].iov_len + iovec[1].iov_len)) < 0)
-	{
-		TRACE("NEGATIVE LENGTH PACKET LOL");
 		return (0);
-	}
 	unpack_ip_info(&ip_header, ip_info);
 	return (len);
-	STATIC_ASSERT(sizeof(t_ipv4_header) == 20);
-	STATIC_ASSERT(sizeof(t_ipv6_header) == 40);
-	STATIC_ASSERT(sizeof(t_icmp_header) == 8);
 }

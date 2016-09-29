@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 14:37:48 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:35:06 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,51 +54,44 @@ static int		ping_packet_cmp(t_ping_packet const *a, uint32_t const *key)
 		return ((a->seq_number > *key) ? 1 : 0);
 }
 
-__attribute__ ((noreturn))
-static void		ping(t_raw_socket *sock, t_ping_args const *args)
+static bool		init_ping(t_ping_args const *args, t_ping *dst)
 {
-	t_ping			ping;
-
-	ping = (t_ping){
-		.sock = sock,
+	ft_bzero(dst, sizeof(t_ping));
+	*dst = (t_ping){
 		.sent_packets = OSET(&ping_packet_cmp, 0),
 		.host_name = args->host,
 		.timeout = args->timeout * T_SEC,
 		.wait_time = args->wait,
 		.flags = args->flags,
 		.echo_id = getpid(),
-		.echo_seq = 0,
 		.count = args->count,
-		.sent = 0,
 		.payload_pattern = args->payload_pattern,
 		.payload_size = args->payload_size,
 		.payload_inc = args->inc_size,
 		.payload_max = args->max_size,
-		.total_sent = 0,
-		.total_received = 0,
-		.total_timeout = 0,
-		.total_time = 0,
 	};
-	ping_handle_signals(&ping);
-	if (args->ttl > 0 && setsockopt(sock->fd, IPPROTO_IP, IP_TTL,
+	if ((dst->sock = raw_socket_create(args->host, args->ai_family)) == NULL)
+		return (false);
+	if (args->ttl > 0 && setsockopt(dst->sock->fd, IPPROTO_IP, IP_TTL,
 				&args->ttl, sizeof(uint32_t)) < 0)
 	{
 		ft_dprintf(2, "setsockopt: %s%n", strerror(errno));
-		exit(1);
+		return (false);
 	}
-	print_status(&ping);
-	send_preload(&ping, args->preload);
-	ping_recvloop(&ping);
+	return (true);
 }
 
 int				main(int argc, char **argv)
 {
-	t_raw_socket	*sock;
 	t_ping_args		ping_args;
+	t_ping			ping;
 
 	if (!parse_argv(argc, argv, &ping_args))
 		return (2);
-	if ((sock = raw_socket_create(ping_args.host, ping_args.ai_family)) == NULL)
+	if (!init_ping(&ping_args, &ping))
 		return (1);
-	ping(sock, &ping_args);
+	ping_handle_signals(&ping);
+	print_status(&ping);
+	send_preload(&ping, ping_args.preload);
+	ping_recvloop(&ping);
 }

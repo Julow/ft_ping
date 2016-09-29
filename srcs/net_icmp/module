@@ -5,3 +5,5 @@ module net::icmp:
 	public require ft::base
 	public require net::raw_socket
 	public require net::utils
+
+	private require ft::printf

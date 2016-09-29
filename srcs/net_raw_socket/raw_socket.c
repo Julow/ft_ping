@@ -6,16 +6,18 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/20 12:23:55 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/28 16:55:17 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:38:26 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft/ft_printf.h"
 #include "net/raw_socket.h"
 
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 static t_raw_socket	*try_connect(struct addrinfo const *info)
@@ -58,6 +60,7 @@ t_raw_socket		*raw_socket_create(char const *host, int ai_family)
 		.ai_family = ai_family,
 		.ai_socktype = SOCK_RAW,
 		.ai_protocol = IPPROTO_ICMP,
+		.ai_flags = AI_CANONNAME,
 	};
 	if ((tmp = getaddrinfo(host, NULL, &hints, &res)) != 0)
 	{
@@ -69,7 +72,7 @@ t_raw_socket		*raw_socket_create(char const *host, int ai_family)
 	return (sock);
 }
 
-void			raw_socket_addr(t_raw_socket const *s, char *dst)
+void				raw_socket_addr(t_raw_socket const *s, char *dst)
 {
 	void const		*addr;
 
@@ -81,7 +84,7 @@ void			raw_socket_addr(t_raw_socket const *s, char *dst)
 		*dst = '\0';
 }
 
-void			raw_socket_destroy(t_raw_socket *s)
+void				raw_socket_destroy(t_raw_socket *s)
 {
 	close(s->fd);
 	free(s);

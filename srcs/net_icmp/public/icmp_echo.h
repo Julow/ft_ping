@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 17:55:41 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/27 17:56:17 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:20:44 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "net/icmp.h"
 # include "net/raw_socket.h"
 
-typedef union u_icmp_echo_data		t_icmp_echo_data;
+typedef struct s_icmp_echo_data		t_icmp_echo_data;
 
 /*
 ** ========================================================================== **
@@ -24,17 +24,13 @@ typedef union u_icmp_echo_data		t_icmp_echo_data;
 */
 
 /*
-** data			=> Raw data field (see icmp_header)
 ** id			=> "Identifier" field
 ** seq			=> "Sequence Number" field
 */
-union			u_icmp_echo_data
+struct			s_icmp_echo_data
 {
-	uint32_t		data;
-	struct {
-		uint16_t		id;
-		uint16_t		seq;
-	};
+	uint16_t		id;
+	uint16_t		seq;
 };
 
 # define ICMP_ECHO_DATA(ID, SEQ)	((t_icmp_echo_data){.id=(ID), .seq=(SEQ)})

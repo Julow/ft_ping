@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/18 15:41:58 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/29 17:35:06 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 18:19:11 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ static void		print_status(t_ping const *ping)
 
 	raw_socket_addr(ping->sock, addr_buff);
 	ft_printf("PING %s (%s): ", ping->host_name, addr_buff);
-	if (ping->payload_inc == 0)
-		ft_printf("%u", ping->payload_size);
+	if (ping->payload_size.inc == 0)
+		ft_printf("%u", ping->payload_size.val);
 	else
-		ft_printf("(%u ... %u)", ping->payload_size,
-			(ping->payload_inc > 0) ? ping->payload_max : 0);
+		ft_printf("(%u ... %u)", ping->payload_size.val,
+			(ping->payload_size.inc > 0) ? ping->payload_size.max : 0);
 	ft_printf(" data bytes%n");
 }
 
@@ -64,11 +64,9 @@ static bool		init_ping(t_ping_args const *args, t_ping *dst)
 		.wait_time = args->wait,
 		.flags = args->flags,
 		.echo_id = getpid(),
-		.count = args->count,
 		.payload_pattern = args->payload_pattern,
-		.payload_size = args->payload_size,
-		.payload_inc = args->inc_size,
-		.payload_max = args->max_size,
+		.payload_size = PING_REPEAT(args->count, args->payload_size,
+				args->inc_size, args->max_size),
 	};
 	if ((dst->sock = raw_socket_create(args->host, args->ai_family)) == NULL)
 		return (false);

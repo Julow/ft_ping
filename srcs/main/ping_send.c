@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/27 18:06:52 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/29 17:04:49 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 18:28:02 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static void		fill_payload(t_ping const *ping, char *dst)
+static void		fill_payload(t_ping const *ping, char *dst, uint32_t size)
 {
 	uint32_t	i;
 	uint32_t	tmp;
 
 	i = 0;
-	while (i < ping->payload_size)
+	while (i < size)
 	{
-		tmp = MIN(ping->payload_size - i, ping->payload_pattern.length);
+		tmp = MIN(size - i, ping->payload_pattern.length);
 		ft_memcpy(dst + i, ping->payload_pattern.str, tmp);
 		i += tmp;
 	}
@@ -55,49 +55,50 @@ static void		ping_pop_timeout(t_ping *ping)
 			break ;
 		ft_oset_remove(&ping->sent_packets, p);
 		ft_printf("Request timeout for icmp_seq=%u%n", p->seq_number);
-		ping->total_timeout++;
+		ping->stats.total_timeout++;
 		free(p);
 	}
 }
 
-static bool		ping_end(t_ping *ping)
+bool			ping_repeat(t_ping_repeat *r)
 {
-	if (ping->sent >= ping->count)
+	if (r->i >= r->count)
 	{
-		if (ping->payload_inc != 0)
+		if (r->inc != 0)
 		{
-			if ((ping->payload_size + ping->payload_inc) >= ping->payload_max)
-				return (true);
-			ping->payload_size += ping->payload_inc;
-			ping->sent = 0;
+			if ((r->val + r->inc) >= r->max)
+				return (false);
+			r->val += r->inc;
+			r->i = 0;
 		}
-		else if (ping->count != 0)
-			return (true);
+		else if (r->count != 0)
+			return (false);
 	}
-	return (false);
+	r->i++;
+	return (true);
 }
 
 void			ping_send(t_ping *ping)
 {
-	char		payload[ping->payload_size];
+	uint32_t const	payload_size = ping->payload_size.val;
+	char			payload[payload_size];
 
 	ping_pop_timeout(ping);
-	if (!ping_end(ping))
+	if (ping_repeat(&ping->payload_size))
 	{
-		fill_payload(ping, payload);
+		fill_payload(ping, payload, payload_size);
 		ping_push_packet(ping);
 		if (!icmp_echo_send(ping->sock,
 				ICMP_ECHO_DATA(ping->echo_id, ping->echo_seq),
 				SUB(payload, sizeof(payload))))
 			exit(1);
 		ping->echo_seq++;
-		ping->sent++;
-		ping->total_sent++;
+		ping->stats.total_sent++;
 	}
 	else if (ping->sent_packets.set.count == 0)
 	{
 		ping_print_stats(ping);
-		exit((ping->total_received == 0) ? 1 : 0);
+		exit((ping->stats.total_received == 0) ? 1 : 0);
 	}
 	alarm(ping->wait_time);
 }

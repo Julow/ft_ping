@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:46:56 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/29 17:14:32 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 18:25:47 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ static struct s_argv_opt const	g_ping_opt[] = {
 	ARGV_OPT_SET("6", AF_INET6, offsetof(t_ping_args, ai_family)),
 	ARGV_OPT_SET("u", AF_UNSPEC, offsetof(t_ping_args, ai_family)),
 	ARGV_OPT_STR("P", false, offsetof(t_ping_args, payload_pattern)),
-	ARGV_OPT_UINT("s", (0, UINT_MAX), offsetof(t_ping_args, payload_size)),
-	ARGV_OPT_INT("h", (INT_MIN, INT_MAX), offsetof(t_ping_args, inc_size)),
+	ARGV_OPT_UINT("s", (0, ICMP_MAX_SIZE), offsetof(t_ping_args, payload_size)),
+	ARGV_OPT_INT("h", (1, ICMP_MAX_SIZE), offsetof(t_ping_args, inc_size)),
 	ARGV_OPT_UINT("G", (0, ICMP_MAX_SIZE), offsetof(t_ping_args, max_size)),
 	ARGV_OPT_UINT("c", (1, UINT_MAX), offsetof(t_ping_args, count)),
 	ARGV_OPT_FLAG("p", PING_F_PRINT, offsetof(t_ping_args, flags)),

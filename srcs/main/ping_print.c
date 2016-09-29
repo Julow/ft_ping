@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/28 14:03:21 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/29 17:06:53 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 17:59:32 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,17 +81,19 @@ void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
 
 void			ping_print_stats(t_ping const *ping)
 {
+	t_ping_stats const *const	s = &ping->stats;
+
 	ft_printf("--- %s ping statistics ---\n", ping->host_name);
 	ft_printf("%u packets transmitted, %u packets received, %u%% packet loss%n",
-			ping->total_sent, ping->total_received,
-			100 - ((ping->total_received == 0) ? 0 :
-							ping->total_received * 100 / ping->total_sent));
-	if (ping->total_received != ping->total_sent)
-		ft_printf("    (%u timeout, %u pending)%n", ping->total_timeout,
-				ping->total_sent - ping->total_received - ping->total_timeout);
-	if (ping->total_received > 0)
+			s->total_sent, s->total_received,
+			100 - ((s->total_received == 0) ? 0 :
+							s->total_received * 100 / s->total_sent));
+	if (s->total_received != s->total_sent)
+		ft_printf("    (%u timeout, %u pending)%n", s->total_timeout,
+				s->total_sent - s->total_received - s->total_timeout);
+	if (s->total_received > 0)
 		ft_printf("round-trip min/avg/max = %u.%0.3u/%u.%0.3u/%u.%0.3u ms%n",
-				USEC_TO_MSEC_VEC(ping->min_time),
-				USEC_TO_MSEC_VEC(ping->total_time / ping->total_received),
-				USEC_TO_MSEC_VEC(ping->max_time));
+				USEC_TO_MSEC_VEC(s->min_time),
+				USEC_TO_MSEC_VEC(s->total_time / s->total_received),
+				USEC_TO_MSEC_VEC(s->max_time));
 }

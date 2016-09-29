@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/21 11:47:57 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/29 17:18:23 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 18:31:14 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,29 +30,50 @@ typedef struct s_ping_args		t_ping_args;
 
 typedef struct s_ping			t_ping;
 typedef struct s_ping_packet	t_ping_packet;
+typedef struct s_ping_stats		t_ping_stats;
+typedef struct s_ping_repeat	t_ping_repeat;
 
-struct			s_ping
+struct			s_ping_stats
 {
-	t_raw_socket	*sock;
-	t_oset			sent_packets;
-	char const		*host_name;
-	uint32_t const	flags;
-	uint64_t const	timeout;
-	uint32_t const	wait_time;
-	uint16_t const	echo_id;
-	uint16_t		echo_seq;
-	uint32_t const	count;
-	uint32_t		sent;
-	t_sub const		payload_pattern;
-	uint32_t		payload_size;
-	int32_t const	payload_inc;
-	uint32_t const	payload_max;
 	uint32_t		total_sent;
 	uint32_t		total_received;
 	uint32_t		total_timeout;
 	uint64_t		total_time;
 	uint32_t		max_time;
 	uint32_t		min_time;
+};
+
+/*
+** Increase 'val' by 'inc' every 'count' calls until it reach 'max'
+** If 'inc' is 0, never increment
+** If 'count' is 0, increment every time if 'inc' > 0 otherwise never end
+** -
+** PING_REPEAT(COUNT, INITIAL_VAL, INC, MAX)	Constructor
+*/
+struct			s_ping_repeat
+{
+	uint32_t		i;
+	uint32_t		count;
+	uint32_t		val;
+	uint32_t		inc;
+	uint32_t		max;
+};
+
+# define PING_REPEAT(C, VAL, INC, M)	((t_ping_repeat){0, C, VAL, INC, M})
+
+struct			s_ping
+{
+	t_raw_socket	*sock;
+	t_oset			sent_packets;
+	char const		*host_name;
+	uint32_t		flags;
+	uint64_t		timeout;
+	uint32_t		wait_time;
+	uint16_t		echo_id;
+	uint16_t		echo_seq;
+	t_sub			payload_pattern;
+	t_ping_repeat	payload_size;
+	t_ping_stats	stats;
 };
 
 struct			s_ping_packet
@@ -83,6 +104,12 @@ void			ping_print_reply(t_ping const *ping, t_ip_info const *ip_info,
 void			ping_print_verbose(t_ping const *ping, t_ip_info const *ip_info,
 					t_icmp_header const *icmp_header, t_sub payload);
 void			ping_print_stats(t_ping const *ping);
+
+/*
+** Increment 'r'
+** Return false if it reach the maximum, true otherwise
+*/
+bool			ping_repeat(t_ping_repeat *r);
 
 /*
 ** ========================================================================== **

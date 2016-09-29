@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:40:51 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/29 17:37:38 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 18:22:15 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "p_icmp.h"
 
 #include <errno.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <sys/types.h>

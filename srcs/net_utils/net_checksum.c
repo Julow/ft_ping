@@ -6,7 +6,7 @@
 /*   By: jaguillo <jaguillo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/09/22 17:46:41 by jaguillo          #+#    #+#             */
-/*   Updated: 2016/09/22 17:47:05 by jaguillo         ###   ########.fr       */
+/*   Updated: 2016/09/29 18:43:12 by jaguillo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ uint16_t		net_checksum(void const *data, uint32_t length)
 		i += 2;
 	}
 	if (i < length)
-		sum += ((uint32_t)*(uint8_t const*)(data + i)) << 8;
+		sum += (uint32_t)*(uint8_t const*)(data + i);
 	while ((tmp = sum >> 16) != 0)
 		sum = (sum & 0xFFFF) + tmp;
 	return (~sum);
